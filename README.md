@@ -1,1 +1,54 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/ABMmghli)
+
+![Logo](./img/logo.png)
+
+
+# Espectra
+
+Este repositório é responsável por controlar o versionamento da aplicação Espectra
+
+## Sobre o Espectra
+
+O Espectra foi desenvolvido a partir da necessidade de uma ferramenta de apoio para psicopedagogos gerenciarem atividades, e habilidades de pessoas com o espectro autista (TEA). 
+
+### Disciplina: Trabalho de Conclusão de Curso
+Semestre: 2026/1
+
+### Orientadores: 
+- [@Joao-Meyer](https://github.com/Joao-Meyer)
+- [@fernandoleonid](https://github.com/fernandoleonid)
+- [@marcelnt](https://github.com/marcelnt)
+- [@yurikomuta](https://github.com/yurikomuta)
+
+
+
+### Documentação
+
+├── 📂 docs              
+│   └── 📄 proposta.pptx    
+│   └── 📄 wireframes.md  
+│   └── 📄 TAP (formato WIKI)  
+│   └── 📄 LER.docx    
+
+## Repositório original
+
+- [Espectra_DOC](https://github.com/GabrielPKTN/Espectra)
+
+## Contribuições
+
+Use mensagens claras, e descritivas em português, utilizando "Convetional Commits"!
+
+Commits pequenos e frequentes.
+
+1. git switch doc
+2. Realize as alterações necessárias
+3. git add .
+4. git commit -m "doc: Adiciona arquivo de levantamento de requisitos não funcionais"
+5. git push -u origin doc
+
+## Authors
+
+- [@GabrielPKTN](https://www.github.com/GabrielPKTN)
+- [@mariacecilia-01](https://github.com/mariacecilia-01)
+- [@AlineMaker](https://www.github.com/AlineMaker)
+- [@nicolas16-sd](https://www.github.com/nicolas16-sd)
+- [@EnzoCarrilho](https://www.github.com/EnzoCarrilho)
