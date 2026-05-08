@@ -111,3 +111,11 @@ Também cuidado com os merges para não prejudicar o trabalho do amiguinho; Lemb
 - [@AlineMaker](https://www.github.com/AlineMaker)
 - [@nicolas16-sd](https://www.github.com/nicolas16-sd)
 - [@EnzoCarrilho](https://www.github.com/EnzoCarrilho)
+
+## REPS Antigos
+
+- [Principal](https://github.com/GabrielPKTN/Espectra)
+- [Front](https://github.com/GabrielPKTN/Espectra-Front)
+- [Back](https://github.com/GabrielPKTN/Espectra-Back)
+- [Mobile](https://github.com/GabrielPKTN/Espectra-Mobile)
+- [Banco de Dados](https://github.com/GabrielPKTN/Espectra-BD)
