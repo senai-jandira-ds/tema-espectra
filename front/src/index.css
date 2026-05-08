@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  --font-inclusive-sans: "Inclusive Sans", sans-serif;
+  --font-instrument-sans: "Instrument Sans", sans-serif;
+  --bg-card: #F2F3F7;
+}
+
+body {
+  margin: 0;
+}
+
+.imprima-regular {
+  font-family: "Imprima", sans-serif;
+}
+
+.inclusive-sans {
+  font-family: "Inclusive Sans", sans-serif;
+}
+
+.instrument-sans {
+  font-family: "Instrument Sans", sans-serif;
+}
+
+.primary-color {
+  color: #3277cf;
+}
+
+.bg-primary-color {
+  background-color: #3277cf;
+}
+
+.secondary-color {
+  color: #4285f4;
+}
+
+.dark-blue {
+  color: #00459c;
+}
+
+:root {
+  --bg-primary-color: #3277cf;
+  --bg-secondary-color: #4285f4;
+}
+
+
+@layer utilities {
+
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 0.3rem;
+    background-color: var(--bg-card);
+
+  }
+
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+  
+      background-color: var(--bg-primary-color);
+      border-radius: 0.2rem;
+
+  }
+
+}
+
+
