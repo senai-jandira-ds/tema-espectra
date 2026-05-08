@@ -26,30 +26,54 @@ Semestre: 2026/1
 
 ### Documentação
 
-├── 📂 doc <br>
-│ㅤㅤ└── 📂 diagramas-bd <br>
-│ㅤㅤ│ㅤㅤ└── 📄 conceitual-espectra.brm3 <br>
-│ㅤㅤ│ㅤㅤ└── 📄 logico-espectra.brm3 <br>
-│ㅤㅤ│ㅤㅤ<br>
-│ㅤㅤ└── 📂 prototipo <br>
-│ㅤㅤ│ㅤㅤ└── 📂 prototipo-alta-fidelidade <br>
-│ㅤㅤ│ㅤㅤ│ㅤㅤㅤ└── 📂 desktop <br>
-│ㅤㅤ│ㅤㅤ│ㅤㅤㅤ│ㅤㅤ└── 📷 1440px.png <br>
-│ㅤㅤ│ㅤㅤ│ㅤㅤㅤ│ㅤㅤ└── 📷 768px.png <br>
-│ㅤㅤ│ㅤㅤ│ㅤㅤㅤ│ㅤㅤ└── 📷 720px.png <br>
-│ㅤㅤ│ㅤㅤ│ㅤㅤㅤ│ㅤㅤ└── 📷 420px.png <br>
-│ㅤㅤ│ㅤㅤ│ㅤㅤㅤ│ㅤㅤ<br>
-│ㅤㅤ│ㅤㅤ│ㅤㅤㅤ└── 📂 mobile <br>
-│ㅤㅤ│ㅤㅤ│ㅤㅤㅤㅤㅤㅤ└── 📷 celular.png <br>
-│ㅤㅤ│ㅤㅤ│ㅤㅤㅤㅤㅤㅤ└── 📷 tablet.png <br>
-│ㅤㅤ│ㅤㅤ│<br>
-│ㅤㅤ│ㅤㅤ└── 📷 tablet.png <br>
-│ㅤㅤ│ㅤㅤㅤ<br>
-│ㅤㅤ└── 📄 proposta.pptx    <br>
-│ㅤㅤ└── 📄 - [TAP (formato WIKI)](https://github.com/GabrielPKTN/Espectra/wiki/TAP-%E2%80%90-Espectra)  <br>
-│ㅤㅤ└── 📄 requisitos-funcionais.docx  <br>
-│ㅤㅤ└── 📄 requisitos-nao-funcionais.docx    <br>
-│ㅤㅤ└── 📄 requisitos-do-projeto.docx <br>
+├── 📂 back <br>
+│ㅤㅤ└── 📂 doc **SWAGGER** <br>
+│ㅤㅤ│ㅤㅤ└── 📂 components <br>
+│ㅤㅤ│ㅤㅤ└── 📂 internal <br>
+│ㅤㅤ│ㅤㅤ└── 📄 basicInfo.js <br>
+│ㅤㅤ│ㅤㅤ└── 📄 index.js <br>
+│ㅤㅤ│ㅤㅤ└── 📄 paths.js <br>
+│ㅤㅤ│<br>
+│ㅤㅤ└── 📂 src    <br>
+│ㅤㅤ│ㅤㅤ└── 📂 controller <br>
+│ㅤㅤ│ㅤㅤ└── 📂 database <br>
+│ㅤㅤ│ㅤㅤ└── 📂 model <br>
+│ㅤㅤ│ㅤㅤ└── 📂 routes <br>
+│ㅤㅤ│ㅤㅤ└── 📄 server.js <br>
+│ㅤㅤ│<br>
+│ㅤㅤ└── 📄 .gitignore    <br>
+│ㅤㅤ└── 📄 knexfile.js    <br>
+│ㅤㅤ└── 📄 package-lock.json    <br>
+│ㅤㅤ└── 📄 package.json    <br>
+│<br>
+├── 📂 banco <br>
+│ㅤㅤ└── 📂 diagramas <br>
+│ㅤㅤ└── 📂 scripts <br>
+│<br>
+└── 📂 documentacao <br>
+│ㅤㅤ└── 📂 prototipo<br>
+│ㅤㅤ└── 📄 Espectra.pdf    <br>
+│ㅤㅤ└── 📄 requisitos-funcionais.docx    <br>
+│ㅤㅤ└── 📄 requisitos-não-funcionais.docx    <br>
+│ㅤㅤ└── 📄 requisitos-do-projeto.docx    <br>
+│<br>
+└── 📂 front <br>
+│ㅤㅤ└── 📂 public<br>
+│ㅤㅤ└── 📂 src<br>
+│ㅤㅤ│ㅤㅤ└── 📂 assets <br>
+│ㅤㅤ│ㅤㅤ└── 📂 components <br>
+│ㅤㅤ│ㅤㅤ└── 📂 pages <br>
+│ㅤㅤ│ㅤㅤ└── 📂 routes <br>
+│ㅤㅤ│ㅤㅤ└── 📄 App.jsx <br>
+│ㅤㅤ│ㅤㅤ└── 📄 index.css <br>
+│ㅤㅤ│ㅤㅤ└── 📄 main.jsx <br>
+│ㅤㅤ│ <br>
+│ㅤㅤ└── 📄 .gitignore    <br>
+│ㅤㅤ└── 📄 eslint.config.js    <br>
+│ㅤㅤ└── 📄 index.html    <br>
+│ㅤㅤ└── 📄 package-lock.json    <br>
+│ㅤㅤ└── 📄 package.json    <br>
+│ㅤㅤ└── 📄 vite.config.js    <br>
 
 ## Contribuições
 
@@ -57,11 +81,28 @@ Use mensagens claras, e descritivas em português, utilizando "Convetional Commi
 
 Commits pequenos e frequentes.
 
-1. git switch doc
-2. Realize as alterações necessárias
-3. git add .
-4. git commit -m "doc: Adiciona arquivo de levantamento de requisitos não funcionais"
-5. git push -u origin doc
+1. git switch develop
+2. git switch -c feat/tela-login
+3. Realize as alterações necessárias
+
+4. git add .
+5. git commit -m "style: Adiciona estilização do botão"
+6. git push -u origin feat/tela-login
+
+7. Abra o GitHub → New Pull Request
+   base: develop ← compare: feature/tela-login
+8. Adicione um reviewer e descreva o que foi feito
+9. Aguarde aprovação, e merge para aprovação para atualizar a branch develop com git pull
+
+**CUIDADO!!!** <br>
+O PR é não é bagunça! 1 PR = 1 BRANCH<br>
+- PR deve ter foco único - Uma feature, uma correção.<br>
+- Descreva o que foi feito, por que e como testar.<br>
+- Nunca seja reviewer do próprio PR.<br>
+- Revise o PR do colega com cuidado.<br>
+- PR pequeno é bem revisado; PR grande níguém revisa direito <br>
+
+Também cuidado com os merges para não prejudicar o trabalho do amiguinho; Lembrando que **VOCÊ** em nenhuma hipótese, **NUNCA**, é o reviewer do próprio PR, isso não existe. Caso eu pegue isso acontecendo, será anotado como mal desempenho 🙂
 
 ## Authors
 
