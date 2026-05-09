@@ -21,32 +21,32 @@ module.exports = {
             "data_nascimento": {
                 "type": "string",
                 "description": "birth_date",
-                "example": "2010-08-12"
+                "example": "12/08/2010"
             },
             "idade": {
                 "type": "int",
                 "description": "years",
                 "example": "12"
             },
-             "diagnostico": {
+            "cpf": {
+                "type": "string",
+                "description": "cpd",
+                "example": "86202126809"
+            },
+             "diagnostico_breve": {
                 "type": "string",
                 "description": "diagnostico",
-                "example": "Autismo e TDAH"
+                "example": "TEA TOD"
             },
             "serie_escolar": {
                 "type": "string",
                 "description": "diagnostico",
-                "example": "2º Série"
+                "example": "3º ANO"
             },
             "grau_suporte": {
                 "type": "string",
                 "description": "diagnostico",
-                "example": "Grau 3"
-            },
-            "numero_registro": {
-                "type": "string",
-                "description": "numero de resgistro",
-                "example": "2026040001"
+                "example": "GRAU 3"
             },
             "grafico": {
                 "type": "array",
@@ -57,13 +57,13 @@ module.exports = {
             "psicopedagogo": {
                 "type": "array",
                 "items": {
-                    $ref: "#/components/schemas/pacienteGetPsicopedagogo"
+                    $ref: "#/components/schemas/pacienteGetUsuarioPsicopedagogo"
                 }
             },
             "responsaveis": {
                 "type": "array",
                 "items": {
-                    $ref: "#/components/schemas/pacienteGetResponsavel"
+                    $ref: "#/components/schemas/pacienteGetUsuarioResponsavel"
                 }
             }
         }
@@ -80,34 +80,55 @@ module.exports = {
             "foto": {
                 "type": "string",
                 "description": "photo",
-                "example": "http://azure.blob.img"
+                "example": null
+            },
+            "cpf": {
+                "type": "string",
+                "description": "cpd",
+                "example": "86202126809"
             },
             "data_nascimento": {
                 "type": "string",
                 "description": "birth_date",
                 "example": "1977-10-24"
             },
-             "diagnostico": {
-                "type": "string",
-                "description": "diagnostico",
-                "example": "Autismo e TDAH"
+            "diagnostico_breve": {
+                "type": "array",
+                "items": {
+                    $ref: "#/components/schemas/transtornoPost"
+                }
             },
             "id_serie_escolar": {
                 "type": "int",
                 "description": "id_psicopedagogo",
-                "example": "1"
+                "example": 1
             },
             "id_grau_suporte": {
                 "type": "int",
                 "description": "id_psicopedagogo",
-                "example": "1"
+                "example": 1
             },
             "id_responsavel": {
                 "type": "int",
                 "description": "id_responsavel",
-                "example": "1"
+                "example": 1
             }
         }
+    },
+
+    transtornoPost: {
+
+        type: 'object',
+        properties: {
+
+            "id_transtorno": {
+                "type": "int",
+                "description": "id",
+                "example": 2
+            },
+
+        }
+
     },
 
     pacienteGet: {
@@ -136,27 +157,27 @@ module.exports = {
             "idade": {
                 "type": "int",
                 "description": "years",
-                "example": "12"
+                "example": 12
             },
-             "diagnostico": {
+            "diagnostico_breve": {
                 "type": "string",
                 "description": "diagnostico",
-                "example": "Autismo e TDAH"
+                "example": "TEA TOD"
             },
             "serie_escolar": {
                 "type": "string",
                 "description": "série escolar",
-                "example": "2º Série"
+                "example": "3º ANO"
             },
             "grau_suporte": {
                 "type": "string",
                 "description": "grau de suporte",
-                "example": "Grau 3"
+                "example": "GRAU 3"
             },
             "cpf": {
                 "type": "string",
-                "description": "numero de resgistro",
-                "example": "2026040001"
+                "description": "cpf",
+                "example": "86202126809"
             }
         }
     },
@@ -180,20 +201,21 @@ module.exports = {
                 "description": "birth_date",
                 "example": "1977-10-24"
             },
-             "diagnostico": {
-                "type": "string",
-                "description": "diagnostico",
-                "example": "Autismo e TDAH"
+            "diagnostico_breve": {
+                "type": "array",
+                "items": {
+                    $ref: "#/components/schemas/transtornoPost"
+                }
             },
             "id_serie_escolar": {
                 "type": "int",
                 "description": "id_psicopedagogo",
-                "example": "1"
+                "example": 1
             },
             "id_grau_suporte": {
                 "type": "int",
                 "description": "id_psicopedagogo",
-                "example": "1"
+                "example": 1
             },
         }
     },

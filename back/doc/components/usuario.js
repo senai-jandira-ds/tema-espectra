@@ -165,6 +165,49 @@ module.exports = {
 
         }
 
-    }
+    },
 
+    pacienteGetUsuarioPsicopedagogo: {
+        type: 'object',
+        properties: {
+            "id": {
+                "type": "int",
+                "description": "id",
+                "example": 1
+            },
+            "nome": {
+                "type": "string",
+                "description": "name",
+                "example": "Julia Nogueira Silva"
+            },
+            "telefone": {
+                "type": "string",
+                "description": "phone_number",
+                "example": "(11) 91245-5476"
+            }
+        }
+    },
+
+
+    pacienteGetUsuarioResponsavel: {
+        
+        type: 'object',
+        properties: {
+            "id": {
+                "type": "int",
+                "description": "id",
+                "example": 1
+            },
+            "nome": {
+                "type": "string",
+                "description": "name",
+                "example": "João Balotelli Neves"
+            },
+            "telefone": {
+                "type": "string",
+                "description": "phone_number",
+                "example": "(11) 91234-5678"
+            }
+        }
+    }
 }
