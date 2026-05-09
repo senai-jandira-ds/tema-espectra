@@ -1,12 +1,12 @@
 module.exports = {
     get: {
         tags: ["EndPoints [PACIENTE]"],
-        description: 'Retorna um Paciente do sistema pelo número de registro.',
-        operationId: 'listarPacienteNumeroRegistro',
+        description: 'Retorna um Paciente do sistema pelo cpf.',
+        operationId: 'listarPacienteCpf',
         parameters: [{
-            name: "numero_registro",
+            name: "CPF",
             in: "query",
-            description: "Número de Registro do paciente",
+            description: "CPF do paciente",
             required: true,
             schema: {
                 type: "string",

@@ -152,7 +152,7 @@ module.exports = {
             "data_nascimento": {
                 "type": "string",
                 "description": "birth_date",
-                "example": "2010-08-12"
+                "example": "12/08/2010"
             },
             "idade": {
                 "type": "int",
