@@ -26,6 +26,14 @@ CREATE TABLE tb_usuario(
 );
 
 
+CREATE TABLE tb_sigla_transtorno(
+
+	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    sigla VARCHAR(10) NOT NULL,
+    nome_completo_transtorno VARCHAR(100) NOT NULL
+
+);
+
 CREATE TABLE tb_serie_escolar(
 	
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -44,13 +52,13 @@ CREATE TABLE tb_paciente(
 	
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     foto VARCHAR(255) NULL,
-    numero_registro VARCHAR(10) NOT NULL,
+    cpf VARCHAR(20) NOT NULL,
  	nome VARCHAR(150) NOT NULL,
     data_nascimento DATE NOT NULL,
-    diagnostico VARCHAR(50),
+    idade INT NOT NULL,
     id_serie_escolar INT NOT NULL,
     id_grau_suporte INT NOT NULL,
-    id_psicopedagogo INT NULL,
+    id_usuario INT NOT NULL,
     
     CONSTRAINT fk_serie_escolar_paciente
     FOREIGN KEY (id_serie_escolar) REFERENCES tb_serie_escolar(id),
@@ -58,9 +66,24 @@ CREATE TABLE tb_paciente(
     CONSTRAINT fk_grau_suporte_paciente
     FOREIGN KEY (id_grau_suporte)  REFERENCES tb_grau_suporte(id),
     
-    CONSTRAINT fk_psicopedagogo_paciente
-    FOREIGN KEY (id_psicopedagogo) REFERENCES tb_psicopedagogo(id)
+    CONSTRAINT fk_usuario_paciente
+    FOREIGN KEY (id_usuario) REFERENCES tb_usuario(id)
     
+);
+
+CREATE TABLE tb_paciente_transtorno(
+
+	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    id_paciente INT NOT NULL,
+    id_sigla_transtorno INT NOT NULL,
+    
+    CONSTRAINT fk_paciente_paciente_transtorno
+    FOREIGN KEY (id_paciente) REFERENCES tb_paciente(id),
+    
+    CONSTRAINT fk_sigla_transtorno_paciente_transtorno
+    FOREIGN KEY (id_sigla_transtorno) REFERENCES tb_sigla_transtorno(id)
+    
+
 );
 
 
