@@ -1,6 +1,14 @@
 CREATE DATABASE db_espectra;
 USE db_espectra;
 
+CREATE TABLE tb_tipo_usuario(
+
+	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    tipo_usuario VARCHAR(40) NOT NULL
+
+);
+
+
 CREATE TABLE tb_usuario(
 	
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
