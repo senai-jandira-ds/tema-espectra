@@ -44,16 +44,6 @@ module.exports = {
     usuarioPost: {
         type: 'object',
         properties: {
-            "id": {
-                "type": "int",
-                "description": "id",
-                "example": 1
-            },
-            "foto": {
-                "type": "string",
-                "description": "photo",
-                "example": "http://azure.blob.img"
-            },
             "nome": {
                 "type": "string",
                 "description": "name",
@@ -163,8 +153,8 @@ module.exports = {
             },
             "tipo_usuario": {
                 "type": "int",
-                "description": "id_tipo_usuario",
-                "example": 1
+                "description": "tipo_usuario",
+                "example": "Psicopedagogo"
             },
             "pacientes": {
                 "type": "array",

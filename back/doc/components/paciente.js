@@ -1,6 +1,3 @@
-const responsavel = require("./responsavel");
-
-
 module.exports = {
 
     paciente: {
@@ -248,14 +245,14 @@ module.exports = {
             "numero_registro": {
                 "type": "string",
                 "description": "numero de resgistro",
-                "example": "2026040001"
+                "example": "52512366579"
             },
-            "reponsavel": {
-                "type": "array",
-                "items": {
-                    $ref: "#/components/schemas/pacienteGetResponsavel"
-                }
-            }
+            // "reponsavel": {
+            //     "type": "array",
+            //     "items": {
+            //         $ref: "#/components/schemas/pacienteGetResponsavel"
+            //     }
+            // }
         }
     },
   
@@ -308,12 +305,12 @@ module.exports = {
                 "description": "numero de resgistro",
                 "example": "2026040001"
             },
-            "reponsavel": {
-                "type": "array",
-                "items": {
-                    $ref: "#/components/schemas/pacienteGetResponsavel"
-                }
-            }
+            // "reponsavel": {
+            //     "type": "array",
+            //     "items": {
+            //         $ref: "#/components/schemas/pacienteGetResponsavel"
+            //     }
+            // }
         }
     }
 }

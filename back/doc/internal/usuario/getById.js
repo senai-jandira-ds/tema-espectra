@@ -1,36 +1,24 @@
 module.exports = {
     get: {
-        tags: ["EndPoints [PSICOPEDAGOGO]"],
-        description: 'Retorna o ID para efetuar o login',
-        operationId: 'retornaId',
+        tags: ["EndPoints [USUARIO]"],
+        description: 'Retorna dados do usuario pelo id',
+        operationId: 'retornaUsuarioId',
         parameters: [{
-            name: "email",
-            in: "query",
-            description: "email",
+            name: "id",
+            in: "path",
+            description: "id do usuario",
             required: true,
             schema: {
-                type: "int",
-                format: "int64"
+                type: "string",
             }
-        },
-        {
-            name: "senha",
-            in: "query",
-            description: "senha",
-            required: true,
-            schema: {
-                type: "int",
-                format: "int64"
-            }
-        }
-    ],
+        }],
         responses: {
             200: {
                 description: "Requisição bem sucedida",
                 content: {
                     "application/json": {
                         schema: {
-                            $ref: "#/components/schemas/psicopedagogoId"
+                            $ref: "#/components/schemas/usuario"
                         }
                     }
                 }

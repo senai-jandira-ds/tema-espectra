@@ -1,24 +1,33 @@
 module.exports = {
-    post: {
-        tags: ["EndPoints [PSICOPEDAGOGO]"],
-        description: 'Cadastra um novo Psicopedagogo no sistema.',
-        operationId: 'inserirPsicopedagogo',
-        requestBody: {
-            content: {
-                "application/json": {
-                    schema: {
-                        $ref: "#/components/schemas/psicopedagogoPost"
-                    }
-                }
+    get: {
+        tags: ["EndPoints [USUARIO]"],
+        description: 'Retorna dados da usuario após efetuar o login',
+        operationId: 'retornaUsuarioLogin',
+        parameters: [{
+            name: "email",
+            in: "query",
+            description: "email do usuario",
+            required: true,
+            schema: {
+                type: "string",
             }
         },
+        {
+            name: "senha",
+            in: "query",
+            description: "senha do usuario",
+            required: true,
+            schema: {
+                type: "int",
+            }
+        }],
         responses: {
             200: {
                 description: "Requisição bem sucedida",
                 content: {
                     "application/json": {
                         schema: {
-                            $ref: "#/components/schemas/psicopedagogo"
+                            $ref: "#/components/schemas/usuarioHome"
                         }
                     }
                 }
@@ -39,16 +48,6 @@ module.exports = {
                     "application/json": {
                         schema: {
                             $ref: "#/components/schemas/error404"
-                        }
-                    }
-                }
-            },
-            415: {
-                description: "Tipos de dados inválidos.",
-                content: {
-                    "appplication/json": {
-                         schema: {
-                            $ref: "#/components/schemas/error415"
                         }
                     }
                 }

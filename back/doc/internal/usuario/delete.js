@@ -1,34 +1,25 @@
 module.exports = {
-    put: {
-        tags: ["EndPoints [PSICOPEDAGOGO]"],
-        description: 'Atualiza dados de um Psicopedagogo no sistema.',
-        operationId: 'atualizarPsicopedagogo',
+    delete: {
+        tags: ["EndPoints [USUARIO]"],
+        description: "Exclui um usuario pela senham, e id",
+        operationId: "deletarUsuario",
         parameters: [{
-            name: "id",
-            in: "path",
-            description: "ID do psicopedagogo",
+            name: "senha",
+            in: "query",
+            description: "senha do usuario",
             required: true,
             schema: {
                 type: "int",
                 format: "int64"
             }
         }],
-        requestBody: {
-            content: {
-                "application/json": {
-                    schema: {
-                        $ref: "#/components/schemas/psicopedagogoPut"
-                    }
-                }
-            }
-        },
         responses: {
             200: {
                 description: "Requisição bem sucedida",
                 content: {
                     "application/json": {
                         schema: {
-                            $ref: "#/components/schemas/success_update"
+                            $ref: "#/components/schemas/success_delete"
                         }
                     }
                 }
@@ -44,7 +35,7 @@ module.exports = {
                 }
             },
             404: {
-                description: "Não encontrado",
+                description: "O Id informado não foi encontrado",
                 content: {
                     "application/json": {
                         schema: {
@@ -53,18 +44,8 @@ module.exports = {
                     }
                 }
             },
-            415: {
-                description: "Tipos de dados inválidos.",
-                content: {
-                    "appplication/json": {
-                         schema: {
-                            $ref: "#/components/schemas/error415"
-                        }
-                    }
-                }
-            },
             500: {
-                description: "Erros Internos",
+                description: "Não foi possível processar a requisição por erros internos da Controller",
                 content: {
                     "application/json": {
                         schema: {

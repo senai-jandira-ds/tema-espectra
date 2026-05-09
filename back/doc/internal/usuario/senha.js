@@ -1,37 +1,33 @@
 module.exports = {
-    delete: {
-        tags: ['EndPoints [RESPONSAVEL]'],
-        description: "Exclui um responsável baseado no seu Id",
-        operationId: "deletarResponsavel",
+    put: {
+        tags: ["EndPoints [USUARIO]"],
+        description: 'Solicita link de redefinição de senha',
+        operationId: 'solicitaRedefinicaoSenha',
         parameters: [{
             name: "id",
             in: "path",
-            description: "Id do Responsável",
+            description: "id do usuario",
             required: true,
             schema: {
-                type: "int",
-                format: "int64"
+                type: "string",
             }
         },
         {
             name: "senha",
             in: "query",
-            description: "senha",
+            description: "senha do usuario",
             required: true,
             schema: {
                 type: "int",
-                format: "int64"
             }
-        }
-    ],
-
+        }],
         responses: {
             200: {
                 description: "Requisição bem sucedida",
                 content: {
                     "application/json": {
                         schema: {
-                            $ref: "#/components/schemas/success_delete"
+                            $ref: "#/components/schemas/success"
                         }
                     }
                 }
@@ -47,7 +43,7 @@ module.exports = {
                 }
             },
             404: {
-                description: "O Id informado não foi encontrado",
+                description: "Não encontrado",
                 content: {
                     "application/json": {
                         schema: {
@@ -57,7 +53,7 @@ module.exports = {
                 }
             },
             500: {
-                description: "Não foi possível processar a requisição por erros internos",
+                description: "Erros Internos",
                 content: {
                     "application/json": {
                         schema: {

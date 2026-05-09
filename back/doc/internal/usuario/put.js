@@ -1,28 +1,27 @@
 module.exports = {
     put: {
-        tags: ['EndPoints [RESPONSAVEL]'],
-        description: "Atualiza a senha de um responsável no sistema",
-        operationId: "atualizarSenhaResponsavel",
+        tags: ['EndPoints [USUARIO]'],
+        description: "Atualiza um usuario no sistema",
+        operationId: "atualizarUsuario",
         parameters: [{
             name: "id",
-            in: "path",
-            description: "Id do Responsável",
-            required: true,
-            schema: {
-                type: "int",
-                format: "int64"
-            }
-        },
-        {
-            name: "senha",
             in: "query",
-            description: "senha",
+            description: "id do usuario",
             required: true,
             schema: {
                 type: "int",
                 format: "int64"
             }
         }],
+        requestBody: {
+            content: {
+                "application/json": {
+                    schema: {
+                        $ref: "#/components/schemas/usuarioPut"
+                    }
+                }
+            }
+        },
         responses: {
             200: {
                 description: "Requisição bem sucedida",
@@ -45,7 +44,7 @@ module.exports = {
                 }
             },
             404: {
-                description: "O Id informado não foi encontrado",
+                description: "Não encontrado",
                 content: {
                     "application/json": {
                         schema: {
@@ -65,7 +64,7 @@ module.exports = {
                 }
             },
             500: {
-                description: "Não foi possível processar a requisição por erros internos da Controller",
+                description: "Não foi possível processar a requisição por erros internos.",
                 content: {
                     "application/json": {
                         schema: {
