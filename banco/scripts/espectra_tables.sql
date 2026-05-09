@@ -1,13 +1,13 @@
 CREATE DATABASE db_espectra;
 USE db_espectra;
 
+-- Usuario
 CREATE TABLE tb_tipo_usuario(
 
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     tipo_usuario VARCHAR(40) NOT NULL
 
 );
-
 
 CREATE TABLE tb_usuario(
 	
@@ -25,7 +25,7 @@ CREATE TABLE tb_usuario(
     
 );
 
-
+-- Paciente
 CREATE TABLE tb_sigla_transtorno(
 
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -85,6 +85,25 @@ CREATE TABLE tb_paciente_transtorno(
     
 
 );
+
+
+-- Paciente & Usuario
+CREATE TABLE tb_usuario_paciente(
+
+	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    id_usuario INT NOT NULL,
+    id_paciente INT NOT NULL,
+    
+    CONSTRAINT fk_usuario_usuario_paciente
+    FOREIGN KEY (id_usuario) REFERENCES tb_usuario(id),
+    
+    CONSTRAINT fk_paciente_usuario_paciente
+    FOREIGN KEY (id_paciente) REFERENCES tb_paciente(id)
+
+);
+
+
+
 
 
 CREATE TABLE tb_resposta_formulario(
