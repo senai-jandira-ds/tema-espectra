@@ -1,37 +1,50 @@
 CREATE DATABASE db_espectra;
 USE db_espectra;
 
--- ----------------------------------
--- TABELAS
--- ----------------------------------
-
-CREATE TABLE tb_responsavel(
-
+CREATE TABLE tb_usuario(
+	
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    foto VARCHAR(255) NOT NULL,
+    foto VARCHAR(255) NULL,
     nome VARCHAR(150) NOT NULL,
     data_nascimento DATE NOT NULL,
     telefone VARCHAR(20) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    senha VARCHAR(50) NOT NULL
+    senha VARCHAR(255) NOT NULL,
+    id_tipo_usuario INT NOT NULL,
+    
+    CONSTRAINT fk_tipo_usuario_usuario
+    FOREIGN KEY (id_tipo_usuario) REFERENCES tb_tipo_usuario(id)
+    
+);
+
+CREATE TABLE tb_responsavel(
+
+	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    foto VARCHAR(255) NULL,
+    nome VARCHAR(150) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    senha VARCHAR(255) NOT NULL
 
 );
 
 CREATE TABLE tb_psicopedagogo(
 
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    foto VARCHAR(255) NOT NULL,
+    foto VARCHAR(255) NULL,
     nome VARCHAR(150) NOT NULL,
     data_nascimento DATE NOT NULL,
     telefone VARCHAR(20) NOT NULL,
     email VARCHAR(255) NOT NULL,
-    senha VARCHAR(150) NOT NULL
+    senha VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE tb_serie_escolar(
 	
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    serie VARCHAR(25)
+    serie VARCHAR(25) NOT NULL
+    
 );
 
 CREATE TABLE tb_grau_suporte(
@@ -44,14 +57,14 @@ CREATE TABLE tb_grau_suporte(
 CREATE TABLE tb_paciente(
 	
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    foto VARCHAR(255),
+    foto VARCHAR(255) NULL,
     numero_registro VARCHAR(10) NOT NULL,
  	nome VARCHAR(150) NOT NULL,
     data_nascimento DATE NOT NULL,
     diagnostico VARCHAR(50),
     id_serie_escolar INT NOT NULL,
     id_grau_suporte INT NOT NULL,
-    id_psicopedagogo INT,
+    id_psicopedagogo INT NULL,
     
     CONSTRAINT fk_serie_escolar_paciente
     FOREIGN KEY (id_serie_escolar) REFERENCES tb_serie_escolar(id),
@@ -65,11 +78,11 @@ CREATE TABLE tb_paciente(
 );
 
 
-
 CREATE TABLE tb_resposta_formulario(
 		
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-	alternativa VARCHAR(20)
+	alternativa VARCHAR(20) NULL
+     
 );
 
 CREATE TABLE tb_faixa_idade(
@@ -77,6 +90,7 @@ CREATE TABLE tb_faixa_idade(
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     idade_min INT NOT NULL,
     idade_max INT NOT NULL
+    
 );
 
 CREATE TABLE tb_status_atividade(
@@ -89,7 +103,7 @@ CREATE TABLE tb_status_atividade(
 CREATE TABLE tb_habilidade(
 	
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    nome VARCHAR(20) NOT NULL
+    nome VARCHAR(50) NOT NULL
 
 );
 
