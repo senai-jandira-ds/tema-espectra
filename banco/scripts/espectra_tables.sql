@@ -103,6 +103,31 @@ CREATE TABLE tb_usuario_paciente(
 );
 
 
+-- Habilidade
+CREATE TABLE tb_habilidade(
+	
+    id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    nome VARCHAR(50) NOT NULL
+
+);
+
+
+-- Habilidade & Paciente
+CREATE TABLE tb_paciente_habilidade(
+		
+	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	anos_meses DECIMAL(10,1) NOT NULL,
+	id_paciente INT NOT NULL,
+	id_habilidade INT NOT NULL,
+	
+	
+	CONSTRAINT fk_paciente_paciente_habilidade
+	FOREIGN KEY (id_paciente)  REFERENCES tb_paciente(id),
+
+	CONSTRAINT fk_habilidade_paciente_habilidade
+	FOREIGN KEY (id_habilidade)  REFERENCES tb_habilidade(id)
+        
+    );
 
 
 
@@ -126,13 +151,6 @@ CREATE TABLE tb_status_atividade(
 	id 	INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     status_atividade VARCHAR(20)
     
-);
-
-CREATE TABLE tb_habilidade(
-	
-    id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    nome VARCHAR(50) NOT NULL
-
 );
 
 CREATE TABLE tb_atividade_personalizada(
@@ -246,20 +264,5 @@ CREATE TABLE tb_formulario(
     
     );
     
-CREATE TABLE tb_paciente_habilidade(
-		
-        id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-        anos_meses DECIMAL(10,1) NOT NULL,
-        id_paciente INT NOT NULL,
-		id_habilidade INT NOT NULL,
-        
-        
-        CONSTRAINT fk_paciente_paciente_habilidade
-		FOREIGN KEY (id_paciente)  REFERENCES tb_paciente(id),
-    
-		CONSTRAINT fk_habilidade_paciente_habilidade
-		FOREIGN KEY (id_habilidade)  REFERENCES tb_habilidade(id)
-        
-    
-    );
+
     
