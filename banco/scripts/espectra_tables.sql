@@ -25,40 +25,18 @@ CREATE TABLE tb_usuario(
     
 );
 
-CREATE TABLE tb_responsavel(
-
-	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    foto VARCHAR(255) NULL,
-    nome VARCHAR(150) NOT NULL,
-    data_nascimento DATE NOT NULL,
-    telefone VARCHAR(20) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    senha VARCHAR(255) NOT NULL
-
-);
-
-CREATE TABLE tb_psicopedagogo(
-
-	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    foto VARCHAR(255) NULL,
-    nome VARCHAR(150) NOT NULL,
-    data_nascimento DATE NOT NULL,
-    telefone VARCHAR(20) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    senha VARCHAR(255) NOT NULL
-);
 
 CREATE TABLE tb_serie_escolar(
 	
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    serie VARCHAR(25) NOT NULL
+    serie VARCHAR(30) NOT NULL
     
 );
 
 CREATE TABLE tb_grau_suporte(
 		
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-	grau INT NOT NULL
+	grau VARCHAR(30) NOT NULL
     
 );
 
