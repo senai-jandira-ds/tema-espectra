@@ -156,7 +156,7 @@ module.exports = {
                 "description": "grau de suporte",
                 "example": "Grau 3"
             },
-            "numero_registro": {
+            "cpf": {
                 "type": "string",
                 "description": "numero de resgistro",
                 "example": "2026040001"
