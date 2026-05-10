@@ -44,6 +44,17 @@ INSERT INTO tb_paciente (foto, nome, cpf, data_nascimento, idade, id_serie_escol
 (NULL, 'Juliana Costa', '50773850848', '2016-07-15', timestampdiff(YEAR, data_nascimento, CURDATE()), 3, 2, 2),
 (NULL, 'Rafael Mendes', '50805139850', '2010-12-05', timestampdiff(YEAR, data_nascimento, CURDATE()), 9, 3, 2);
 
+INSERT INTO tb_usuario_paciente (id_paciente, id_usuario) VALUES
+(1, 1),
+(2, 1),
+(3, 1),
+(4, 1),
+(5, 1),
+(1, 2),
+(2, 2),
+(3, 2),
+(4, 2),
+(5, 2);
 
 INSERT INTO tb_sigla_transtorno (sigla, nome_completo_transtorno) VALUES
 ('TDAH', 'Transtorno do Déficit de Atenção com Hiperatividade'),
@@ -693,9 +704,6 @@ INSERT INTO tb_atividade_portage (numero_questao, comportamento, valor_atividade
 (139, 'Pára em um só pé sem apoio (olhos fechados, 10 segundos).', 0.034, 6, 5),
 (140, 'Dependura-se por 10 segundos em uma barra horizontal.', 0.034, 6, 5);
 
-
-select * from tb_atividade_personalizada;
-select * from tb_paciente;
 
 INSERT INTO tb_atividade (id_paciente, id_atividade_personalizada, id_atividade_portage) VALUES
 (1, 1, null),

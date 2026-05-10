@@ -225,25 +225,34 @@ BEGIN
 
     ELSE
 
-        -- DADOS DO PSICOPEDAGOGO
         SELECT nome, foto
         INTO v_nome, v_foto
         FROM tb_psicopedagogo
         WHERE id = p_id_psicopedagogo
         LIMIT 1;
 
-        -- PACIENTES + RESPONSÁVEIS
         SELECT JSON_ARRAYAGG(
             JSON_OBJECT(
                 'id', p.id,
                 'foto', p.foto,
                 'nome', p.nome,
                 'data_nascimento', p.data_nascimento,
+                'cpf', paciente.cpf,
                 'idade', TIMESTAMPDIFF(YEAR, p.data_nascimento, CURDATE()),
-                'diagnostico', p.diagnostico,
-                'serie_escolar', s.serie,
-                'grau_suporte', g.grau,
-                'numero_registro', p.numero_registro,
+
+                'diagnostico_breve', (
+					SELECT IFNULL(JSON_ARRAYAGG(
+						JSON_OBJECT(
+							'id_transtorno', diagnostico.id,
+							'sigla', diagnostico.sigla,
+                            'nome_completo', diagnostico.nome_completo_transtorno
+                        )
+                    ), JSON_ARRAY())
+                ),
+                
+                'serie_escolar', serie.serie,
+                'grau_suporte', grau_suporte.grau,
+                
 
                 'responsavel', (
                     SELECT IFNULL(JSON_ARRAYAGG(
