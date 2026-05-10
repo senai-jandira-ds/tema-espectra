@@ -120,6 +120,33 @@ INSERT INTO tb_habilidade (nome) VALUES
 ('Auto-Cuidados'),
 ('Desenvolvimento motor');
 
+INSERT INTO tb_paciente_habilidade (idade_meses, id_paciente, id_habilidade) VALUES
+(0.0, 1, 1),
+(0.0, 1, 2),
+(0.0, 1, 3),
+(0.0, 1, 4),
+(0.0, 1, 5),
+(0.0, 2, 1),
+(0.0, 2, 2),
+(0.0, 2, 3),
+(0.0, 2, 4),
+(0.0, 2, 5),
+(0.0, 3, 1),
+(0.0, 3, 2),
+(0.0, 3, 3),
+(0.0, 3, 4),
+(0.0, 3, 5),
+(0.0, 4, 1),
+(0.0, 4, 2),
+(0.0, 4, 3),
+(0.0, 4, 4),
+(0.0, 4, 5),
+(0.0, 5, 1),
+(0.0, 5, 2),
+(0.0, 5, 3),
+(0.0, 5, 4),
+(0.0, 5, 5);
+
 
 INSERT INTO tb_atividade_personalizada (comportamento, valor_meses, id_usuario, id_habilidade) VALUES
 ('Estende a mão em direção a um objeto oferecido', 1, 1, 1),
@@ -128,9 +155,6 @@ INSERT INTO tb_atividade_personalizada (comportamento, valor_meses, id_usuario, 
 ('Imita gestos simples como bater palmas', 1, 1, 1),
 ('Segura objetos pequenos com as mãos', 2, 1, 1);
 
-select * from tb_faixa_idade;
-select * from tb_habilidade;
-desc tb_atividade_portage;
 
 INSERT INTO tb_atividade_portage (numero_questao, comportamento, valor_atividade, id_faixa_idade, id_habilidade) VALUES
 (1, 'Observa uma pessoa movimentando-se em seu campo visual.', 0.0357, 1, 1),
@@ -670,50 +694,56 @@ INSERT INTO tb_atividade_portage (numero_questao, comportamento, valor_atividade
 (140, 'Dependura-se por 10 segundos em uma barra horizontal.', 0.034, 6, 5);
 
 
-INSERT INTO tb_atividade (id_status_atividade, id_paciente, id_atividade_personalizada, id_atividade_portage) VALUES
-(1, 1, 6, NULL),
-(2, 2, NULL, 2),
-(3, 3, 7, NULL),
-(1, 4, NULL, 4),
-(2, 5, 8, NULL);
+select * from tb_atividade_personalizada;
+select * from tb_paciente;
 
-
+INSERT INTO tb_atividade (id_paciente, id_atividade_personalizada, id_atividade_portage) VALUES
+(1, 1, null),
+(1, 2, null),
+(1, 3, null),
+(2, 4, null),
+(2, 5, null),
+(1, null, 1),
+(1, null, 2),
+(1, null, 3),
+(2, null, 2),
+(2, null, 4);
 
 
 INSERT INTO tb_tipo_aplicacao (alternativa) VALUES
-('Auxílio total'),
+('Independente'),
 ('Auxílio parcial'),
-('Independente');
-
+('Auxílio total');
 
 
 INSERT INTO tb_tentativa (resultado, observacao, data_tentativa, id_tipo_aplicacao, id_atividade) VALUES
-(TRUE, 'Realizou a atividade com auxílio mínimo', '2026-04-10', 3, 11),
-(FALSE, 'Não conseguiu completar mesmo com apoio', '2026-04-11', 1, 12),
-(TRUE, 'Executou parcialmente a tarefa solicitada', '2026-04-12', 2, 13),
-(TRUE, 'Concluiu a atividade de forma independente', '2026-04-13', 3, 14),
-(FALSE, 'Demonstrou dificuldade de compreensão da tarefa', '2026-04-14', 2, 15);
+(TRUE, 'Realizou a atividade com auxílio mínimo', curdate(), 1, 1),
+(FALSE, 'Não conseguiu completar mesmo com apoio', curdate(), 2, 2),
+(TRUE, 'Executou parcialmente a tarefa solicitada', curdate(), 3, 3),
+(TRUE, 'Concluiu a atividade de forma independente', curdate(), 1, 4),
+(FALSE, 'Demonstrou dificuldade de compreensão da tarefa', curdate(), 2, 5);
 
+INSERT INTO tb_formulario (id_paciente, id_atividade_portage, id_resposta)
+SELECT 1, id, NULL 
+FROM tb_atividade_portage 
+ORDER BY id ASC;
 
+INSERT INTO tb_formulario (id_paciente, id_atividade_portage, id_resposta)
+SELECT 2, id, NULL 
+FROM tb_atividade_portage 
+ORDER BY id ASC;
 
-INSERT INTO tb_formulario (id_paciente, id_atividade_portage, id_resposta) VALUES
-(1, 1, 1),
-(2, 2, 2),
-(3, 3, 3),
-(4, 4, 1),
-(5, 5, 2);
+INSERT INTO tb_formulario (id_paciente, id_atividade_portage, id_resposta)
+SELECT 3, id, NULL 
+FROM tb_atividade_portage 
+ORDER BY id ASC;
 
+INSERT INTO tb_formulario (id_paciente, id_atividade_portage, id_resposta)
+SELECT 4, id, NULL 
+FROM tb_atividade_portage 
+ORDER BY id ASC;
 
-
-INSERT INTO tb_paciente_habilidade (anos_meses, id_paciente, id_habilidade) VALUES
-(2.0, 1, 6),
-(3.5, 2, 7),
-(4.0, 3, 8),
-(5.2, 4, 9),
-(1.8, 5, 10);
-
-
-
-
-
-
+INSERT INTO tb_formulario (id_paciente, id_atividade_portage, id_resposta)
+SELECT 5, id, NULL 
+FROM tb_atividade_portage 
+ORDER BY id ASC;

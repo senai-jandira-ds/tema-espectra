@@ -246,5 +246,3 @@ CREATE TABLE tb_formulario(
     
     );
     
-
-    
