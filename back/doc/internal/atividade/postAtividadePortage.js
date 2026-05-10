@@ -3,15 +3,27 @@ module.exports = {
         tags: ["EndPoints [ATIVIDADE]"],
         description: 'Cadastra uma nova atividade tipo portage para o paciente.',
         operationId: 'inserirAtividadeTipoPortage',
-        requestBody: {
-            content: {
-                "application/json": {
-                    schema: {
-                        $ref: "#/components/schemas/atividadeTipoPortagePost"
-                    }
-                }
+        parameters: [{
+            name: "id_paciente",
+            in: "path",
+            description: "Id da paciente",
+            required: true,
+            schema: {
+                type: "int",
+                format: "int64"
             }
         },
+        {
+            name: "id_atividade_portage",
+            in: "path",
+            description: "id da atividade portage",
+            required: true,
+            schema: {
+                type: "int",
+                format: "int64"
+            }
+        }],
+        
         responses: {
             200: {
                 description: "Requisição bem sucedida",

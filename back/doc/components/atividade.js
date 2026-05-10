@@ -20,10 +20,10 @@ module.exports = {
                     $ref: "#/components/schemas/atividade_portage"
                 }
             },
-            "status_atividade": {
-                "type": "string",
+            "concluida": {
+                "type": "boolean",
                 "description": "status da atividade",
-                "example": "Em andamento"
+                "example": false
             }
         }
     },
@@ -31,11 +31,6 @@ module.exports = {
     atividadeTipoPortagePost: {
         type: "object",
         properties: {
-            "id_status_atividade": {
-                "type": "int",
-                "description": "id_status_atividade",
-                "example": 1
-            },
             "id_paciente": {
                 "type": "int",
                 "description": "id_paciente",
@@ -59,12 +54,7 @@ module.exports = {
             },
             "id_paciente": {
                 "type": "int",
-                "description": "id_paciente",
-                "example": 22
-            },
-            "id_psicopedagogo": {
-                "type": "int",
-                "description": "id_paciente",
+                "description": "id paciente",
                 "example": 22
             },
             "atividade": {
@@ -73,10 +63,10 @@ module.exports = {
                     $ref: "#/components/schemas/atividade_personalizada"
                 }
             },
-            "status_atividade": {
+            "concluida": {
                 "type": "string",
                 "description": "status da atividade",
-                "example": "Em andamento"
+                "example": false
             }
         }
     },
@@ -84,7 +74,7 @@ module.exports = {
     atividadeTipoPersonalizadaPost: {
         type: "object",
         properties: {
-            "questao": {
+            "comportamento": {
                 "type": "string",
                 "description": "questao",
                 "example": "Conversar em rodas de amigos e colegas"
@@ -96,23 +86,13 @@ module.exports = {
             },
             "id_psicopedagogo": {
                 "type": "int",
-                "description": "id_psicopedagogo",
+                "description": "id usuario",
                 "example": 1
             },
             "id_habilidade": {
                 "type": "int",
-                "description": "id_habilidade",
+                "description": "id habilidade",
                 "example": 3
-            },
-            "id_status_atividade": {
-                "type": "int",
-                "description": "id_status_atividade",
-                "example": 1
-            },
-            "id_paciente": {
-                "type": "int",
-                "description": "id_paciente",
-                "example": 22
             }
         }
     },
@@ -120,7 +100,7 @@ module.exports = {
     atividadeTipoPersonalizadaPut: {
         type: "object",
         properties: {
-            "questao": {
+            "comportamento": {
                 "type": "string",
                 "description": "questao",
                 "example": "Conversar em rodas de amigos e colegas"
