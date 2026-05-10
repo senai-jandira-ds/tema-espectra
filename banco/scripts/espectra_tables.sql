@@ -29,7 +29,7 @@ CREATE TABLE tb_usuario(
 CREATE TABLE tb_sigla_transtorno(
 
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    sigla VARCHAR(10) NOT NULL,
+    sigla VARCHAR(20) NOT NULL,
     nome_completo_transtorno VARCHAR(100) NOT NULL
 
 );

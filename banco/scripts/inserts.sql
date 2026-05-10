@@ -1,58 +1,95 @@
 -- ----------------------------------
 -- INSERTS
 -- ----------------------------------
-
-INSERT INTO tb_responsavel (foto, nome, data_nascimento, telefone, email, senha) VALUES
-('foto1.jpg', 'Carlos Silva', '1985-03-12', '(11)91234-5678', 'carlos.silva@email.com', 'senha123'),
-('foto2.jpg', 'Mariana Souza', '1990-07-25', '(11)92345-6789', 'mariana.souza@email.com', 'senha456'),
-('foto3.jpg', 'João Pereira', '1978-11-03', '(11)93456-7890', 'joao.pereira@email.com', 'senha789'),
-('foto4.jpg', 'Fernanda Lima', '1995-01-18', '(11)94567-8901', 'fernanda.lima@email.com', 'senha101'),
-('foto5.jpg', 'Ricardo Alves', '1982-09-30', '(11)95678-9012', 'ricardo.alves@email.com', 'senha202');
+USE db_espectra;
 
 
-INSERT INTO tb_psicopedagogo (foto, nome, data_nascimento, telefone, email, senha) VALUES
-('psico1.jpg', 'Ana Martins', '1980-05-14', '(11)91111-1111', 'ana.martins@email.com', 'senhaA123'),
-('psico2.jpg', 'Bruno Carvalho', '1975-08-22', '(11)92222-2222', 'bruno.carvalho@email.com', 'senhaB456'),
-('psico3.jpg', 'Camila Rodrigues', '1988-12-09', '(11)93333-3333', 'camila.rodrigues@email.com', 'senhaC789'),
-('psico4.jpg', 'Diego Fernandes', '1992-03-27', '(11)94444-4444', 'diego.fernandes@email.com', 'senhaD101'),
-('psico5.jpg', 'Eduarda Gomes', '1983-10-05', '(11)95555-5555', 'eduarda.gomes@email.com', 'senhaE202');
+INSERT INTO tb_tipo_usuario(tipo_usuario) VALUES ('Psicopedagogo'),('Responsável');
 
-
+INSERT INTO tb_usuario (foto, nome, data_nascimento, telefone, email, senha, id_tipo_usuario) VALUES
+(NULL, 'Gabriel Lacerda Correia', '2005-08-09', '(11) 92479-2057', 'gabriel@email.com', '123456@ABC', 1),
+(NULL, 'Maria Cecília Pereira Jardim', '2008-03-21', '(11) 95324-6654', 'maria@email.com', '654321@CBA', 2);
 
 INSERT INTO tb_serie_escolar (serie) VALUES
-('Maternal'),
-('Jardim I'),
-('Jardim II'),
-('1º ano'),
-('2º ano'),
-('3º ano'),
-('4º ano'),
-('5º ano'),
-('6º ano'),
-('7º ano'),
-('8º ano'),
-('9º ano'),
-('1º série do Ensino Médio'),
-('2º série do Ensino Médio'),
-('3º série do Ensino Médio');
-
-
+('MATERNAL'),
+('JARDIM I'),
+('JARDIM II'),
+('1º ANO'),
+('2º ANO'),
+('3º ANO'),
+('4º ANO'),
+('5º ANO'),
+('6º ANO'),
+('7º ANO'),
+('8º ANO'),
+('9º ANO'),
+('1º MÉDIO'),
+('2º MÉDIO'),
+('3º MÉDIO'),
+('CONCLUIDO');
 
 INSERT INTO tb_grau_suporte (grau) VALUES
-('1'),
-('2'),
-('3');
+('GRAU 1'),
+('GRAU 2'),
+('GRAU 3');
 
+INSERT INTO tb_paciente (foto, nome, cpf, data_nascimento, idade, id_serie_escolar, id_grau_suporte, id_usuario) VALUES
+(NULL, 'Lucas Andrade', '68212059812', '2015-04-10', timestampdiff(YEAR, data_nascimento, CURDATE()), 4, 1, 1),
+(NULL, 'Beatriz Oliveira', '75287318898', '2013-09-22', timestampdiff(YEAR, data_nascimento, CURDATE()), 6, 2, 1),
+(NULL, 'Pedro Santos', '71121093884', '2011-01-30', timestampdiff(YEAR, data_nascimento, CURDATE()), 8, 1, 1),
+(NULL, 'Juliana Costa', '50773850848', '2016-07-15', timestampdiff(YEAR, data_nascimento, CURDATE()), 3, 2, 2),
+(NULL, 'Rafael Mendes', '50805139850', '2010-12-05', timestampdiff(YEAR, data_nascimento, CURDATE()), 9, 3, 2);
 
+INSERT INTO tb_sigla_transtorno (sigla, nome_completo_transtorno) VALUES
+('TDAH', 'Transtorno do Déficit de Atenção com Hiperatividade'),
+('TEA', 'Transtorno do Espectro Autista'),
+('TAG', 'Transtorno de Ansiedade Generalizada'),
+('TAB', 'Transtorno Afetivo Bipolar'),
+('TOC', 'Transtorno Obsessivo-Compulsivo'),
+('TEPT', 'Transtorno de Estresse Pós-Traumático'),
+('TPL', 'Transtorno de Personalidade Borderline'),
+('TOD', 'Transtorno Opositor Desafiador'),
+('TDC', 'Transtorno Dismórfico Corporal'),
+('TCA', 'Transtorno de Compulsão Alimentar'),
+('TDA', 'Transtorno do Déficit de Atenção'),
+('TPAS', 'Transtorno da Personalidade Antissocial'),
+('TPN', 'Transtorno de Personalidade Narcisista'),
+('TPE', 'Transtorno de Personalidade Esquizoide'),
+('TP Esquizo', 'Transtorno de Personalidade Esquizotípica'),
+('TPE-Evit', 'Transtorno de Personalidade Evitativa'),
+('TPD', 'Transtorno de Personalidade Dependente'),
+('TP Histri', 'Transtorno de Personalidade Histriônica'),
+('T Pânico', 'Transtorno de Pânico'),
+('TAS', 'Transtorno de Ansiedade Social'),
+('Fob. Esp.', 'Fobia Específica'),
+('Agorafob', 'Agorafobia'),
+('T. Depr. M', 'Transtorno Depressivo Maior'),
+('Distimia', 'Transtorno Depressivo Persistente'),
+('T. Somat', 'Transtorno de Sintomas Somáticos'),
+('T. Convers', 'Transtorno Conversivo'),
+('T. Factíc', 'Transtorno Factício'),
+('Anorexia', 'Anorexia Nervosa'),
+('Bulimia', 'Bulimia Nervosa'),
+('Insônia', 'Transtorno de Insônia'),
+('Hipersônia', 'Transtorno de Hipersônia'),
+('Narcolep', 'Narcolepsia'),
+('Apneia', 'Apneia Obstrutiva do Sono'),
+('Dislexia', 'Transtorno Específico de Aprendizagem com prejuízo na leitura'),
+('Discalc', 'Transtorno Específico de Aprendizagem com prejuízo na matemática'),
+('Tiques', 'Transtorno de Tiques'),
+('Tourette', 'Transtorno de Tourette'),
+('Esquizof', 'Esquizofrenia'),
+('T. Esquizoa', 'Transtorno Esquizoafetivo'),
+('T. Delir', 'Transtorno Delirante');
 
-INSERT INTO tb_paciente (nome, data_nascimento, numero_registro, diagnostico, id_serie_escolar, id_grau_suporte, id_psicopedagogo) VALUES
-('Lucas Andrade', '2015-04-10', '2026040001', 'TDAH', 4, 1, 1),
-('Beatriz Oliveira', '2013-09-22', '2026040002', 'TEA', 6, 2, NULL),
-('Pedro Santos', '2011-01-30', '2026040003', 'Dislexia', 8, 1, 3),
-('Juliana Costa', '2016-07-15', '2026040004', 'TDAH', 3, 2, NULL),
-('Rafael Mendes', '2010-12-05', '2026040005', 'TEA', 9, 3, 5);
+INSERT INTO tb_paciente_transtorno (id_paciente, id_sigla_transtorno) VALUES
+-- Paciente 1 com TDAH e TEA
+(1, 1), 
+(1, 2),
 
-
+-- Paciente 2 com TAG e TOC
+(2, 3),
+(2, 5);
 
 INSERT INTO tb_resposta_formulario (alternativa) VALUES
 ('Sim'),
