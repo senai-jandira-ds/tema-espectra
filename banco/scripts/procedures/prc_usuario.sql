@@ -177,3 +177,15 @@ DELIMITER ;
 CALL prc_home_psicopedagogo(1, @object);
 select @object;
 
+CREATE VIEW vw_usuario AS
+SELECT 
+		usuario.id,
+		usuario.nome,
+        usuario.foto,
+        usuario.email,
+        usuario.data_nascimento,
+        usuario.telefone,
+        tipo_usuario.tipo_usuario
+FROM tb_usuario usuario
+	JOIN tb_tipo_usuario tipo_usuario
+    ON usuario.id_tipo_usuario = tipo_usuario.id;
