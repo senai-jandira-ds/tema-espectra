@@ -3,10 +3,72 @@
 -- v = variavel
 -- ------------------------------
 
-drop procedure prc_usuario_login;
-drop procedure prc_home;
+-- drop procedure prc_usuario;
+-- drop procedure prc_home;
+-- drop procedure prc_usuario_login;
+-- drop procedure prc_cria_usuario;
+-- drop procedure prc_atualiza_usuario;
+-- drop procedure prc_solicita_redefinicao_senha;
+-- drop procedure prc_atualiza_senha_usuario;
+-- drop procedure prc_deleta_usuario;
 
--- Retorna id do usuario que está fazendo login
+DELIMITER $$
+
+CREATE PROCEDURE prc_usuario(
+	IN p_id INT,
+    OUT p_message JSON
+) BEGIN
+	
+    DECLARE v_foto VARCHAR(255);
+    DECLARE v_nome VARCHAR(150);
+    DECLARE v_data_nascimento DATE;
+    DECLARE v_telefone VARCHAR(20);
+    DECLARE v_email VARCHAR(255);
+    
+    DECLARE data_hoje DATE;
+    SET data_hoje = curdate();
+		
+    IF NOT EXISTS (
+		
+        SELECT 1
+        FROM tb_usuario
+        WHERE id = p_id
+        
+    ) THEN 
+		SET p_message = JSON_OBJECT(
+            'status', FALSE,
+            'status_code', 404,
+            'message', 'Não foram encontrados dados de retorno!!!',
+            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        );
+    ELSE
+		
+        SELECT foto, nome, data_nascimento, telefone, email
+        INTO v_foto, v_nome, v_data_nascimento, v_telefone, v_email
+        FROM tb_usuario
+        WHERE id = p_id;
+        
+        SET p_message = JSON_OBJECT(
+			'status', TRUE,
+            'status_code', 200,
+            'message', 'Requisição bem sucedida!!!',
+            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y'),
+            'usuario', JSON_OBJECT(
+				'id', p_id,
+                'foto', v_foto,
+                'nome', v_nome,
+                'email', v_email,
+                'data_nascimento', v_data_nascimento,
+                'telefone', v_telefone
+            )
+        );
+    
+    END IF;
+    
+END$$
+
+DELIMITER ;
+
 DELIMITER $$
 
 CREATE PROCEDURE prc_usuario_login(
@@ -14,8 +76,7 @@ CREATE PROCEDURE prc_usuario_login(
     IN p_senha VARCHAR(255),
     OUT v_id INT,
     OUT p_message JSON
-)
-BEGIN
+) BEGIN
 
 	DECLARE data_hoje DATE;
 
@@ -43,31 +104,21 @@ BEGIN
             'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
         
-        CALL prc_home(v_id, @resultLogin);
+        CALL prc_home(v_id, @resultHome);
         
     
     END IF;
 
 END$$
 
-
 DELIMITER ;
 
-select * from tb_usuario;
-
-call prc_usuario_login('maria@email.com', '654321@CBA', @id, @message);
-select @id;
-select @resultLogin;
-
-
--- Retorna home do psicopedagogo
 DELIMITER $$
 
 CREATE PROCEDURE prc_home(
 	IN p_id_usuario INT,
     OUT p_message JSON
-)
-BEGIN 
+) BEGIN 
 	
     DECLARE v_id INT;
     DECLARE v_foto VARCHAR(150);
@@ -173,19 +224,255 @@ BEGIN
 END$$
 
 DELIMITER ;
+    
+DELIMITER $$
 
-CALL prc_home_psicopedagogo(1, @object);
-select @object;
+CREATE PROCEDURE prc_cria_usuario(
+	IN p_nome VARCHAR(150),
+    IN p_email VARCHAR(255),
+    IN p_senha VARCHAR(255),
+    IN p_data_nascimento DATE,
+    IN p_telefone VARCHAR(20),
+    IN p_id_tipo_usuario INT,
+    OUT p_message JSON
+) BEGIN
+	
+	DECLARE data_hoje DATE;
 
-CREATE VIEW vw_usuario AS
-SELECT 
-		usuario.id,
-		usuario.nome,
-        usuario.foto,
-        usuario.email,
-        usuario.data_nascimento,
-        usuario.telefone,
-        tipo_usuario.tipo_usuario
-FROM tb_usuario usuario
-	JOIN tb_tipo_usuario tipo_usuario
-    ON usuario.id_tipo_usuario = tipo_usuario.id;
+	SET data_hoje = CURDATE();
+    
+    IF EXISTS(
+    
+		SELECT 1 
+        FROM tb_usuario 
+        WHERE email = p_email
+        
+    ) THEN SET p_message = JSON_OBJECT(
+			'status', FALSE,
+            'status_code', 409,
+            'message', 'Existem dados de inserção já cadastrados no sistema!!!',
+            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		);
+        
+    ELSE
+    
+		INSERT INTO tb_usuario (
+				nome,
+				data_nascimento,
+				telefone,
+				email,
+				senha,
+				id_tipo_usuario
+		) VALUES (
+				p_nome,
+				p_data_nascimento,
+				p_telefone,
+				p_email,
+				p_senha,
+				p_id_tipo_usuario
+		);
+		
+		SET p_message = JSON_OBJECT(
+			'status', TRUE,
+            'status_code', 201,
+            'message', 'Cadastro bem sucedido!!!',
+            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		);
+        
+		CALL prc_usuario_login(p_email, p_senha, @idUsuarioLogin, @resultUsuarioLogin);
+    
+    END IF;
+    
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE prc_atualiza_usuario(
+	IN p_id INT,
+	IN p_foto VARCHAR(255),
+	IN p_nome VARCHAR(150),
+    IN p_email VARCHAR(255),
+    IN p_data_nascimento DATE,
+    IN p_telefone VARCHAR(20),
+    OUT p_message JSON
+) BEGIN 
+	
+    DECLARE data_hoje DATE;
+    SET data_hoje = curdate();
+    
+    IF NOT EXISTS (
+		SELECT 1
+        FROM tb_usuario
+        WHERE id = p_id
+    ) THEN SET p_message = JSON_OBJECT(
+		'status', FALSE,
+		'status_code', 404,
+		'message', 'Não foram encontrados dados de retorno!!!',
+		'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+    );
+	
+    ELSE
+		
+        UPDATE tb_usuario SET
+			foto = p_foto,
+            nome = p_nome,
+            email = p_email,
+            data_nascimento = p_data_nascimento,
+            telefone = p_telefone
+		WHERE id = p_id;
+            
+		SET p_message = JSON_OBJECT(
+            'status', TRUE,
+            'status_code', 200,
+            'message', 'Item atualizado com sucesso!!!',
+            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        );
+    
+    END IF;
+    
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE prc_solicita_redefinicao_senha(
+	
+    IN p_email VARCHAR(255),
+    OUT p_message JSON
+
+) BEGIN 
+
+	DECLARE data_hoje DATE;
+    SET data_hoje = curdate();
+
+	IF NOT EXISTS (SELECT 1 FROM tb_usuario WHERE email = p_email) THEN
+    
+		SET p_message = JSON_OBJECT(
+			'status', FALSE,
+			'status_code', 404,
+			'message', 'Não foram encontrados dados de retorno!!!',
+			'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		);
+    
+    ELSE
+    
+		SET p_message = JSON_OBJECT(
+			'status', TRUE,
+			'status_code', 200,
+			'message', 'Requisição bem sucedida!!!',
+			'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        );
+    
+    END IF;
+    
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE prc_atualiza_senha_usuario(
+
+	IN p_id INT,
+	IN p_senha VARCHAR(255),
+    OUT p_message JSON
+
+) BEGIN
+	
+    DECLARE data_hoje DATE;
+    SET data_hoje = curdate();
+    
+	IF NOT EXISTS(SELECT 1 FROM tb_usuario WHERE id = p_id) THEN
+		
+		SET p_message =JSON_OBJECT(
+			'status', FALSE,
+			'status_code', 404,
+			'message', 'Não foram encontrados dados de retorno!!!',
+			'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        );
+			
+    ELSE
+    
+		UPDATE tb_usuario SET
+			senha = p_senha
+		WHERE id = p_id;
+    
+		SET p_message = JSON_OBJECT(
+            'status', TRUE,
+            'status_code', 200,
+            'message', 'Item atualizado com sucesso!!!',
+            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        );
+    
+    END IF;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE prc_deleta_usuario(
+	
+    IN p_id INT,
+    IN p_senha VARCHAR(255),
+	OUT p_message JSON 
+    
+) BEGIN
+	
+    DECLARE data_hoje DATE;
+    SET data_hoje = CURDATE();
+    
+    IF NOT EXISTS (
+		SELECT 1
+        FROM tb_usuario
+        WHERE id = p_id
+    ) THEN SET p_message = JSON_OBJECT(
+		'status', FALSE,
+		'status_code', 404,
+		'message', 'Não foram encontrados dados de retorno!!!',
+		'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+    );
+    
+    ELSEIF (
+		SELECT 1
+        FROM tb_usuario
+        WHERE id = p_id AND senha = p_senha
+    ) THEN 
+		
+        DELETE FROM tb_usuario WHERE id = p_id AND senha = p_senha;
+    
+		SET p_message = JSON_OBJECT(
+            'status', TRUE,
+            'status_code', 200,
+            'message', 'Item deletado com sucesso!!!',
+            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        );
+    
+    ELSE 
+		
+        SET p_message = JSON_OBJECT(
+		'status', FALSE,
+		'status_code', 207,
+		'message', 'Um dos campos fornecidos está errado!!!',
+		'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        
+    );
+    
+    
+    END IF;
+
+END$$
+    
+DELIMITER ;
+
+-- select @idUsuarioLogin;
+-- select @resultUsuario;
+-- select @resultUsuarioLogin;
+-- select @resultHome;
+-- select @resultCreateUser;
+-- select @resultUpdateUser;
+-- select @resultDeleteUser;
