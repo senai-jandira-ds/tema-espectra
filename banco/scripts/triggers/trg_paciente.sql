@@ -18,7 +18,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE TRIGGER trg_habilidade_paciente
+CREATE TRIGGER trg_formulario_paciente
 AFTER INSERT ON tb_paciente
 FOR EACH ROW
 BEGIN
