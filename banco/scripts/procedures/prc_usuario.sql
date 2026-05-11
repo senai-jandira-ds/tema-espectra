@@ -3,11 +3,68 @@
 -- v = variavel
 -- ------------------------------
 
+drop procedure prc_usuario_login;
+drop procedure prc_home;
+
+-- Retorna id do usuario que está fazendo login
+DELIMITER $$
+
+CREATE PROCEDURE prc_usuario_login(
+    IN p_email VARCHAR(255),
+    IN p_senha VARCHAR(255),
+    OUT v_id INT,
+    OUT p_message JSON
+)
+BEGIN
+
+	DECLARE data_hoje DATE;
+
+	SET data_hoje = CURDATE();
+
+	SELECT id INTO v_id
+	FROM tb_usuario 
+	WHERE email = p_email AND senha = p_senha;
+
+    IF v_id IS NULL THEN
+
+        SET p_message = JSON_OBJECT(
+            'status', FALSE,
+            'status_code', 404,
+            'message', 'Não foram encontrados dados de retorno!!!',
+            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        );
+
+    ELSE 
+    
+		SET p_message = JSON_OBJECT(
+            'status', TRUE,
+            'status_code', 200,
+            'message', 'Requisição feita com sucesso!!!',
+            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        );
+        
+        CALL prc_home(v_id, @resultLogin);
+        
+    
+    END IF;
+
+END$$
+
+
+DELIMITER ;
+
+select * from tb_usuario;
+
+call prc_usuario_login('maria@email.com', '654321@CBA', @id, @message);
+select @id;
+select @resultLogin;
+
+
 -- Retorna home do psicopedagogo
 DELIMITER $$
 
-CREATE PROCEDURE prc_home_psicopedagogo(
-	IN p_id_psicopedagogo INT,
+CREATE PROCEDURE prc_home(
+	IN p_id_usuario INT,
     OUT p_message JSON
 )
 BEGIN 
@@ -24,7 +81,7 @@ BEGIN
     IF NOT EXISTS (
 		SELECT 1
 		FROM tb_usuario
-        WHERE id = p_id_psicopedagogo AND id_tipo_usuario = 1
+        WHERE id = p_id_usuario 
     
     ) THEN SET p_message = JSON_OBJECT(
             'status', FALSE,
@@ -40,7 +97,7 @@ BEGIN
         FROM tb_usuario usuario
         INNER JOIN tb_tipo_usuario tipo_usuario
         ON tipo_usuario.id = usuario.id_tipo_usuario
-        WHERE usuario.id = p_id_psicopedagogo;
+        WHERE usuario.id = p_id_usuario;
         
         SELECT JSON_ARRAYAGG(
 			JSON_OBJECT(
@@ -76,21 +133,40 @@ BEGIN
         ON serie.id = paciente.id_serie_escolar
         JOIN tb_grau_suporte grau_suporte
         ON grau_suporte.id = paciente.id_grau_suporte
-        WHERE relacao.id_usuario = p_id_psicopedagogo
+        WHERE relacao.id_usuario = p_id_usuario
         ORDER BY paciente.id ASC;
         
-         SET p_message = JSON_OBJECT(
+        IF v_tipo_usuario = 'Psicopedagogo' THEN 
+        
+			SET p_message = JSON_OBJECT(
             'status', TRUE,
             'status_code', 200,
             'message', 'Requisição bem sucedida!!!',
             'data', JSON_OBJECT(
-                'id', p_id_psicopedagogo,
+                'id', p_id_usuario,
                 'foto', v_foto,
                 'nome', v_nome,
                 'tipo_usuario', v_tipo_usuario,
                 'pacientes', return_object
             )
         );
+        
+        ELSE 
+         
+         SET p_message = JSON_OBJECT(
+            'status', TRUE,
+            'status_code', 200,
+            'message', 'Requisição bem sucedida!!!',
+            'data', JSON_OBJECT(
+                'id', p_id_usuario,
+                'foto', v_foto,
+                'nome', v_nome,
+                'tipo_usuario', v_tipo_usuario,
+                'familiares', return_object
+            )
+        );
+        
+        END IF;
         
     END IF; 
 
