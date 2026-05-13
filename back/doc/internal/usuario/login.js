@@ -1,15 +1,24 @@
 module.exports = {
     get: {
-        tags: ["EndPoints [PACIENTE]"],
-        description: 'Retorna um Paciente do sistema pelo número de registro.',
-        operationId: 'listarPacienteNumeroRegistro',
+        tags: ["EndPoints [USUARIO]"],
+        description: 'Retorna dados da usuario após efetuar o login',
+        operationId: 'retornaUsuarioLogin',
         parameters: [{
-            name: "numero_registro",
+            name: "email",
             in: "query",
-            description: "Número de Registro do paciente",
+            description: "email do usuario",
             required: true,
             schema: {
                 type: "string",
+            }
+        },
+        {
+            name: "senha",
+            in: "query",
+            description: "senha do usuario",
+            required: true,
+            schema: {
+                type: "int",
             }
         }],
         responses: {
@@ -18,13 +27,13 @@ module.exports = {
                 content: {
                     "application/json": {
                         schema: {
-                            $ref: "#/components/schemas/pacienteGet"
+                            $ref: "#/components/schemas/usuarioHome"
                         }
                     }
                 }
             },
             400: {
-                 description: "Campo inválido",
+                description: "Campo inválido",
                 content: {
                     "application/json": {
                         schema: {

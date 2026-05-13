@@ -10,22 +10,22 @@ module.exports = {
             "resultado": {
                 "type": "boolean",
                 "description": "result",
-                "example": 1
+                "example": true
             },
-            "data": {
+            "data_tentativa": {
                 "type": "string",
                 "description": "data da tentaitva",
-                "example": "2026-04-14"
+                "example": "14/04/2026"
             },
             "observacao": {
                 "type": "string",
                 "description": "observation",
-                "example": ""
+                "example": "Lorem ipsum"
             },
             "nivel_auxilio": {
                 "type": "string",
                 "description": "nivel de auxilio",
-                "example": "auxílio parcial"
+                "example": "Auxílio parcial"
             },
             "atividade": {
                 "type": "array",
@@ -56,24 +56,24 @@ module.exports = {
             "resultado": {
                 "type": "boolean",
                 "description": "result",
-                "example": 1
+                "example": true
             },
             "observacao": {
                 "type": "string",
                 "description": "observation",
-                "example": ""
+                "example": "Lorem ipsum"
             },
-              "data": {
+            "data_tentativa": {
                 "type": "string",
                 "description": "data da tentaitva",
                 "example": "2026-04-14"
             },
-            "nivel_auxilio_id": {
+            "id_nivel_auxilio": {
                 "type": "int",
                 "description": "id do nivel de auxilio",
                 "example": 3                
             },
-             "atividade_id": {
+             "id_atividade": {
                 "type": "int",
                 "description": "id da atividade",
                 "example": 1                

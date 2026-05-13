@@ -1,5 +1,3 @@
-const psicopedagogo           = require('./psicopedagogo.js')
-const responsavel             = require('./responsavel.js')
 const paciente                = require('./paciente.js')
 const atividade               = require('./atividade.js')
 const atividade_personalizada = require('./atividade_personalizada.js')
@@ -7,12 +5,12 @@ const atividade_portage       = require('./atividade_portage.js')
 const tentativa               = require('./tentativa.js')
 const grafico                 = require('./grafico.js')
 const formulario              = require('./formulario.js')
+const usuario                 = require('./usuario.js')
 
 module.exports = {
     components: {
         schemas: {
-            ...psicopedagogo,
-            ...responsavel,
+            ...usuario,
             ...paciente,
             ...atividade,
             ...atividade_personalizada,
@@ -21,6 +19,26 @@ module.exports = {
             ...grafico,
             ...formulario,
 
+            success: {
+                type: "object",
+                properties: {
+                    status: {
+                        type: "boolean",
+                        description: "true",
+                        example: "true"
+                    },
+                    status_code: {
+                        type: "int",
+                        description: 200,
+                        example: 200
+                    },
+                    message: {
+                        type: "string",
+                        description: "Requisição feita com sucesso!!!",
+                        example: "Requisição feita com sucesso!!!"
+                    }       
+                }
+            },
             success_delete: {
                 type: "object",
                 properties: {
@@ -30,9 +48,9 @@ module.exports = {
                         example: "true"
                     },
                     status_code: {
-                        type: "integer",
-                        description: "200",
-                        example: "200"
+                        type: "int",
+                        description: 200,
+                        example: 200
                     },
                     message: {
                         type: "string",
@@ -50,9 +68,9 @@ module.exports = {
                         example: "true"
                     },
                     status_code: {
-                        type: "integer",
-                        description: "200",
-                        example: "200"
+                        type: "int",
+                        description: 200,
+                        example: 200
                     },
                     message: {
                         type: "string",
@@ -70,9 +88,9 @@ module.exports = {
                         example: "true"
                     },
                     status_code: {
-                        type: "integer",
-                        description: "201",
-                        example: "201"
+                        type: "int",
+                        description: 201,
+                        example: 201
                     },
                     message: {
                         type: "string",
@@ -90,9 +108,9 @@ module.exports = {
                         example: "false"
                     },
                     status_code: {
-                        type: "integer",
-                        description: "404",
-                        example: "404"
+                        type: "int",
+                        description: 404,
+                        example: 404
                     },
                     message: {
                         type: "string",
@@ -111,8 +129,8 @@ module.exports = {
                     },
                     status_code: {
                         type: "int",
-                        description: "400",
-                        example: "400"
+                        description: 400,
+                        example: 400
                     },
                     message: {
                         type: "string",
@@ -131,8 +149,8 @@ module.exports = {
                     },
                     status_code: {
                         type: "int",
-                        description: "500",
-                        example: "500"
+                        description: 500,
+                        example: 500
                     },
                     message: {
                         type: "string",
@@ -151,8 +169,8 @@ module.exports = {
                     },
                     status_code: {
                         type: "int",
-                        description: "415",
-                        example: "415"
+                        description: 415,
+                        example: 415
                     },
                     message: {
                         type: "string",

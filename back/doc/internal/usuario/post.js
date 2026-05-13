@@ -1,25 +1,24 @@
 module.exports = {
     post: {
-        tags: ['EndPoints [RESPONSAVEL]'],
-        description: "Cadastra um responsável no sistema",
-        operationId: "inserirResponsavel",
+        tags: ["EndPoints [USUARIO]"],
+        description: 'Cadastra um novo usuario no sistema',
+        operationId: 'inserirUsuario',
         requestBody: {
             content: {
                 "application/json": {
                     schema: {
-                        $ref: "#/components/schemas/responsavelPost"
+                        $ref: "#/components/schemas/usuarioPost"
                     }
                 }
             }
         },
-
         responses: {
             200: {
                 description: "Requisição bem sucedida",
                 content: {
                     "application/json": {
                         schema: {
-                            $ref: "#/components/schemas/responsavel"
+                            $ref: "#/components/schemas/usuarioHome"
                         }
                     }
                 }
@@ -34,28 +33,18 @@ module.exports = {
                     }
                 }
             },
-            404: {
-                description: "O Id informado não foi encontrado",
+             415: {
+                description: "Tipos de dados inválidos.",
                 content: {
-                    "application/json": {
-                        schema: {
-                            $ref: "#/components/schemas/error404"
-                        }
-                    }
-                }
-            },
-            415: {
-                description: "Tipos de dados inválidos",
-                content: {
-                    "application/json": {
-                        schema: {
+                    "appplication/json": {
+                         schema: {
                             $ref: "#/components/schemas/error415"
                         }
                     }
                 }
             },
-            500: {
-                description: "Não foi possível processar a requisição por erros internos",
+             500: {
+                description: "Erros Internos",
                 content: {
                     "application/json": {
                         schema: {

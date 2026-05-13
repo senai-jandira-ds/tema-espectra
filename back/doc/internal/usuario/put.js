@@ -1,12 +1,12 @@
 module.exports = {
     put: {
-        tags: ["EndPoints [PSICOPEDAGOGO]"],
-        description: 'Atualiza dados de um Psicopedagogo no sistema.',
-        operationId: 'atualizarPsicopedagogo',
+        tags: ['EndPoints [USUARIO]'],
+        description: "Atualiza um usuario no sistema",
+        operationId: "atualizarUsuario",
         parameters: [{
             name: "id",
-            in: "path",
-            description: "ID do psicopedagogo",
+            in: "query",
+            description: "id do usuario",
             required: true,
             schema: {
                 type: "int",
@@ -17,7 +17,7 @@ module.exports = {
             content: {
                 "application/json": {
                     schema: {
-                        $ref: "#/components/schemas/psicopedagogoPut"
+                        $ref: "#/components/schemas/usuarioPut"
                     }
                 }
             }
@@ -54,17 +54,17 @@ module.exports = {
                 }
             },
             415: {
-                description: "Tipos de dados inválidos.",
+                description: "Tipos de dados inválidos",
                 content: {
-                    "appplication/json": {
-                         schema: {
+                    "application/json": {
+                        schema: {
                             $ref: "#/components/schemas/error415"
                         }
                     }
                 }
             },
             500: {
-                description: "Erros Internos",
+                description: "Não foi possível processar a requisição por erros internos.",
                 content: {
                     "application/json": {
                         schema: {

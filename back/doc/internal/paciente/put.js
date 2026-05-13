@@ -64,25 +64,11 @@ module.exports = {
                 }
             },
             500: {
-                description: "Não foi possível processar a requisição por erros internos da Controller",
+                description: "Não foi possível processar a requisição por erros internos.",
                 content: {
                     "application/json": {
                         schema: {
-                            $ref: "#/components/schemas/error500_controller"
-                        }
-                    }
-                }
-            },
-            500: {
-                description: "Não foi possível processar a requisição por erros internos da Model",
-                content: {
-                    "appkication/json": {
-                        schema: {
-                            "application/json": {
-                                schema: {
-                                    $ref: "#/components/schemas/error500"
-                                }
-                            }
+                            $ref: "#/components/schemas/error500"
                         }
                     }
                 }

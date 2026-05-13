@@ -3,16 +3,16 @@ module.exports = {
     formulario: {
         type: 'object',
         properties: {
+            "id_resposta": {
+                "type": "int",
+                "description": "id da alternativa",
+                "example": 1
+            },
             "atividade_portage": {
                 "type": "array",
                 "items": {
                     $ref: "#/components/schemas/atividade_portage"
                 }
-            },
-            "id_resposta": {
-                "type": "int",
-                "description": "id da alternativa",
-                "example": 1
             }
         }
     },
