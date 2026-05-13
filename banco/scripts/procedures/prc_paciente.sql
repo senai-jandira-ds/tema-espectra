@@ -3,8 +3,6 @@
 -- v = variavel
 -- ------------------------------
 
-
--- Perfil do paciente
 DELIMITER $$
 
 CREATE PROCEDURE prc_buscar_paciente_completo(
@@ -36,7 +34,7 @@ CREATE PROCEDURE prc_buscar_paciente_completo(
 
         SET p_mensagem = JSON_OBJECT(
             'status', FALSE,
-            'status_code', '404',
+            'status_code', 404,
             'message', 'Paciente não encontrado',
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
@@ -120,6 +118,7 @@ CREATE PROCEDURE prc_buscar_paciente_completo(
                 'grau_suporte', v_grau_suporte,
                 'serie_escolar', v_serie_escolar,
                 'grafico', v_habilidades,
+                'diagnostico', v_diagnostico,
 				'psicopedagogo', v_psicopedagogo,
                 'responsavel', v_responsaveis
             )
@@ -131,10 +130,6 @@ END $$
 
 DELIMITER ;
 
-CALL prc_buscar_paciente_completo(7, @resultPaciente);
-SELECT @resultPaciente;
-
--- Adiciona o paciente
 DELIMITER $$
 
 CREATE PROCEDURE prc_adicionar_paciente(
@@ -242,7 +237,7 @@ CREATE PROCEDURE prc_adicionar_paciente(
 		
         SET p_mensagem = JSON_OBJECT(
             'status', TRUE,
-            'status_code', '201',
+            'status_code', 201,
             'message', 'Item criado com sucesso!!!',
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
@@ -255,44 +250,50 @@ END $$
 
 DELIMITER ;
 
-select * from tb_paciente;
-CALL prc_adicionar_paciente(
-	null,
-    'Marcelo Rezende',
-    '[1, 2, 3]',
-    '12345678901',
-    '2005-05-10',
-    6,
-    2,
-    2,
-    @resultCreatePaciente
-);
-
-drop procedure prc_adicionar_paciente;
-SELECT @resultCreatePaciente;
-SELECT @resultPaciente;
-
--- Atualiza dados do paciente
 DELIMITER $$
 
 CREATE PROCEDURE prc_atualizar_paciente(
+
 	IN p_id_paciente INT,
 	IN p_nome VARCHAR(150),
     IN p_foto VARCHAR(255),
     IN p_data_nascimento DATE,
-    IN p_diagnostico VARCHAR(50),
+    IN p_diagnostico VARCHAR(400),
+    IN p_cpf VARCHAR(20),
     IN p_id_serie_escolar INT,
     IN p_id_grau_suporte INT,
     OUT p_mensagem JSON
+    
 ) BEGIN
     
-    IF NOT EXISTS(SELECT 1 FROM tb_serie_escolar WHERE id = p_id_serie_escolar) THEN
+	DECLARE data_hoje DATE;
+    SET data_hoje = curdate();
+    
+    IF NOT EXISTS(SELECT 1 FROM tb_paciente WHERE id = p_id_paciente) THEN
+    
+		SET p_mensagem = JSON_OBJECT(
+            'status', FALSE,
+			'status_code', 404,
+            'message', 'Não foram encontrados, dados de retorno!!!',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		);
+    
+    ELSEIF EXISTS (SELECT 1 FROM tb_paciente WHERE cpf = p_cpf AND id != p_id_paciente) THEN
+    
+		SET p_mensagem = JSON_OBJECT(
+            'status', FALSE,
+            'status_code', 409,
+            'message', 'Dados de inserção foram encontrados já cadastrados!!!',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        );
+    
+    ELSEIF NOT EXISTS(SELECT 1 FROM tb_serie_escolar WHERE id = p_id_serie_escolar) THEN
 		
         SET p_mensagem = JSON_OBJECT(
             'status', FALSE,
             'status_code', 400,
             'message', 'id_serie_esolar Incorreto',
-            'data', NULL
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
         
 	ELSEIF NOT EXISTS(SELECT 1 FROM tb_grau_suporte WHERE id = p_id_grau_suporte) THEN
@@ -301,51 +302,55 @@ CREATE PROCEDURE prc_atualizar_paciente(
             'status', FALSE,
             'status_code', 400,
             'message', 'id_grau_suporte Incorreto',
-            'data', NULL
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
         
-    ELSEIF EXISTS (SELECT 1 FROM tb_paciente WHERE id = p_id_paciente) THEN
+    ELSE
 		
         -- atualiza o paciente
         UPDATE tb_paciente SET
 			nome = p_nome,
             foto = p_foto,
+            cpf = p_cpf,
             data_nascimento = p_data_nascimento,
-            diagnostico = p_diagnostico,
             id_serie_escolar = p_id_serie_escolar,
             id_grau_suporte = p_id_grau_suporte
-	WHERE id = p_id_paciente;
+		WHERE id = p_id_paciente;
     
-    CALL prc_buscar_paciente_completo(p_id_paciente, p_mensagem);
+		INSERT INTO tb_paciente_transtorno (id_paciente, id_sigla_transtorno)
+        SELECT p_id_paciente, v_id_transtorno
+        FROM JSON_TABLE(
+			p_diagnostico,
+            '$[*]' COLUMNS (
+				v_id_transtorno INT PATH '$'
+            )
+        ) AS lista_transtornos;
     
-    -- sobrescreve mensagem
         SET p_mensagem = JSON_OBJECT(
             'status', TRUE,
 			'status_code', 200,
             'message', 'Item atualizado com sucesso'
         );
         
-	ELSE
-    
-		SET p_mensagem = JSON_OBJECT(
-            'status', FALSE,
-			'status_code', 404,
-            'message', 'Paciente não encontrado'
-		);
+        CALL prc_buscar_paciente_completo(p_id_paciente, @resultPaciente);
         
 	END IF;
+    
 END $$
 
 DELIMITER ;
 
--- Deleta familiar se responsável, deleta só a relação entre psico e paciente 
 DELIMITER $$
 
-CREATE PROCEDURE proc_delete_familiar(
+CREATE PROCEDURE proc_delete_paciente(
+	IN p_id_usuario INT,
 	IN p_id_paciente INT,
     OUT p_mensagem JSON
 ) BEGIN
 	
+	DECLARE data_hoje DATE;
+    SET data_hoje = curdate();
+    
     -- valida se o paciente existe
     IF NOT EXISTS (SELECT 1 FROM tb_paciente WHERE id = p_id_paciente) THEN
 	
@@ -353,62 +358,68 @@ CREATE PROCEDURE proc_delete_familiar(
             'status', FALSE,
 			'status_code', 404,
             'message', 'Paciente não encontrado',
-            'data', NULL
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
 	
     ELSE
 		
-        -- remove tentativas
-		DELETE t
-		FROM tb_tentativa t
-		JOIN tb_atividade a ON a.id = t.id_atividade
-		WHERE a.id_paciente = p_id_paciente;
-
-		-- remove atividades
-		DELETE FROM tb_atividade
-		WHERE id_paciente = p_id_paciente;
+        IF  EXISTS (SELECT 1 FROM tb_usuario WHERE id = p_id_usuario AND id_tipo_usuario = 2) THEN
         
-        -- remove formulários do paciente
-		DELETE FROM tb_formulario
-		WHERE id_paciente = p_id_paciente;
-
-		-- remove responsáveis
-		DELETE FROM tb_responsavel_paciente
-		WHERE id_paciente = p_id_paciente;
-
-		-- remove habilidades
-		DELETE FROM tb_paciente_habilidade
-		WHERE id_paciente = p_id_paciente;
-
-	-- remove vínculo psicopedagogo
-		UPDATE tb_paciente
-		SET id_psicopedagogo = NULL
-		WHERE id = p_id_paciente;
-
-		-- remove paciente
-		DELETE FROM tb_paciente
-		WHERE id = p_id_paciente;
+			DELETE FROM tb_usuario_paciente 	WHERE id_paciente = p_id_paciente;
+			DELETE FROM tb_paciente_habilidade	WHERE id_paciente = p_id_paciente;
+			DELETE FROM tb_paciente_transtorno 	WHERE id_paciente = p_id_paciente;
+			DELETE FROM tb_formulario			WHERE id_paciente = p_id_paciente;
+			DELETE FROM tb_atividade			WHERE id_paciente = p_id_paciente;
+            DELETE FROM tb_paciente				WHERE id = p_id_paciente;
         
-        SET p_mensagem = JSON_OBJECT(
-			'status', TRUE,
-            'status_code', 200,
-            'message', 'Delete realizado com sucesso!!'
-        );
+			SET p_mensagem = JSON_OBJECT(
+				'status', TRUE,
+				'status_code', 200,
+				'message', 'Delete realizado com sucesso',
+				'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+            );
         
-	END IF;
+        ELSEIF EXISTS (SELECT 1 FROM tb_usuario WHERE id = p_id_usuario AND id_tipo_usuario = 1) THEN
+        
+			DELETE FROM tb_usuario_paciente 	WHERE id_paciente = p_id_usuario;
+        
+			SET p_mensagem = JSON_OBJECT(
+				'status', TRUE,
+				'status_code', 200,
+				'message', 'Delete realizado com sucesso',
+				'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+            );
+        
+        ELSE
+        
+			SET p_mensagem = JSON_OBJECT(
+				'status', TRUE,
+				'status_code', 401,
+				'message', 'Não autorizado',
+				'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+            );
+        
+		END IF;
+    
+    END IF;
     
 END $$
 
 DELIMITER ;
 
--- Insere relacao com usuario
+-- CALL proc_delete_paciente(2, 1, @resultDeletePaciente);
+select @resultDeletePaciente;
+
 DELIMITER $$
 
-CREATE PROCEDURE prc_inserir_relacao_psicopedagogo_paciente(
+CREATE PROCEDURE prc_inserir_relacao_usuario_paciente(
     IN p_id_paciente INT,
-    IN p_id_psicopedagogo INT,
+    IN p_id_usuario INT,
     OUT p_mensagem JSON
 ) BEGIN
+
+	DECLARE data_hoje DATE;
+    SET data_hoje = curdate();
 
     -- valida paciente
     IF NOT EXISTS (
@@ -419,19 +430,19 @@ CREATE PROCEDURE prc_inserir_relacao_psicopedagogo_paciente(
             'status', FALSE,
             'status_code', 404,
             'message', 'Paciente não encontrado',
-            'data', NULL
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
 
     -- valida psicopedagogo
     ELSEIF NOT EXISTS (
-        SELECT 1 FROM tb_psicopedagogo WHERE id = p_id_psicopedagogo
+        SELECT 1 FROM tb_usuario WHERE id = p_id_usuario
     ) THEN
 
         SET p_mensagem = JSON_OBJECT(
             'status', FALSE,
             'status_code', 404,
-            'message', 'Psicopedagogo não encontrado',
-            'data', NULL
+            'message', 'Usuário não encontrado',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
         
 	ELSEIF EXISTS (
@@ -445,24 +456,22 @@ CREATE PROCEDURE prc_inserir_relacao_psicopedagogo_paciente(
             'status', FALSE,
             'status_code', 409,
             'message', 'Essa relação já existe',
-            'data', NULL
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
 
     ELSE
 
-        -- atualiza relação
-        UPDATE tb_paciente
-        SET id_psicopedagogo = p_id_psicopedagogo
-        WHERE id = p_id_paciente;
-
-        CALL prc_buscar_paciente_completo(p_id_paciente, p_mensagem);
+        INSERT INTO tb_usuario_paciente (id_usuario, id_paciente) VALUES (p_id_usuario, p_id_paciente);
 
         -- sobrescreve mensagem
-        SET p_mensagem = JSON_SET(
-            p_mensagem,
-            '$.message',
-            'Relação inserida com sucesso'
+        SET p_mensagem = JSON_OBJECT(
+            'status', TRUE,
+            'status_code', 201,
+            'message', 'Item criado com sucesso!!!',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
+        
+        CALL prc_buscar_paciente_completo(p_id_paciente, @resultUsuario);
 
     END IF;
 
