@@ -3,6 +3,7 @@
 -- v = variavel
 -- ------------------------------
 
+
 -- Perfil do paciente
 DELIMITER $$
 
@@ -21,10 +22,13 @@ CREATE PROCEDURE prc_buscar_paciente_completo(
     DECLARE v_grau_suporte VARCHAR(30);
 
     -- JSONS
-    DECLARE v_habilidades JSON;
+    DECLARE v_diagnostico 	JSON;
+    DECLARE v_habilidades 	JSON;
     DECLARE v_psicopedagogo JSON;
-    DECLARE v_responsaveis JSON;
+    DECLARE v_responsaveis 	JSON;
     
+    DECLARE data_hoje DATE;
+    SET data_hoje = curdate();
 
     -- VALIDAÇÃO
     IF NOT EXISTS (
@@ -35,20 +39,100 @@ CREATE PROCEDURE prc_buscar_paciente_completo(
             'status', FALSE,
             'status_code', '404',
             'message', 'Paciente não encontrado',
-            'data', NULL
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
 
     ELSE
-    
-		SELECT
 
+        -- PACIENTE
+        SELECT nome, foto, data_nascimento, idade, cpf, serie, grau
+        INTO v_nome, v_foto, v_data_nascimento, v_idade, v_cpf, v_serie_escolar, v_grau_suporte
+        FROM vw_data_paciente WHERE id_paciente = p_id_paciente;
+
+		-- DIAGNÓSTICO
+        SELECT JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'sigla', 			diagnostico.sigla,
+                'id_transtorno', 	diagnostico.id_diagnostico,
+                'nome_completo', 	diagnostico.nome_completo
+            )
+        )
+        INTO v_diagnostico
+        FROM vw_diagnostico_paciente diagnostico
+        WHERE id_paciente = p_id_paciente;
         
+        SET v_diagnostico = IFNULL(v_diagnostico, JSON_ARRAY());
+
+        -- HABILIDADES
+        SELECT JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id', 			habilidade_paciente.id_habilidade,
+                'nome', 		habilidade_paciente.nome_habilidade,
+                'idade_meses', 	habilidade_paciente.idade_meses
+            )
+        )
+        INTO v_habilidades 
+        FROM vw_habilidades_paciente habilidade_paciente
+        WHERE id_paciente = p_id_paciente;
+
+        SET v_habilidades = IFNULL(v_habilidades, JSON_ARRAY());
+
+        -- RESPONSÁVEIS
+        SELECT JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id', 		responsavel.id_usuario,
+                'nome', 	responsavel.nome,
+                'telefone', responsavel.telefone
+            )
+        )
+        INTO v_responsaveis
+        FROM vw_responsavel_paciente responsavel
+        WHERE id_paciente = p_id_paciente;
+
+        SET v_responsaveis = IFNULL(v_responsaveis, JSON_ARRAY());
+
+		-- PSICOPEDAGOGO
+        SELECT JSON_ARRAYAGG(
+            JSON_OBJECT(
+                'id', 		psicopedagogo.id_usuario,
+                'nome', 	psicopedagogo.nome,
+                'telefone', psicopedagogo.telefone
+            )
+        )
+        INTO v_psicopedagogo
+        FROM vw_psicopedagogo_paciente psicopedagogo
+        WHERE id_paciente = p_id_paciente;
+
+        SET v_psicopedagogo = IFNULL(v_psicopedagogo, JSON_ARRAY());
+
+        -- RETORNO FINAL
+        SET p_mensagem = JSON_OBJECT(
+            'status', TRUE,
+            'status_code', '200',
+            'message', 'Paciente encontrado',
+            'data', JSON_OBJECT(
+                'id', p_id_paciente,
+                'foto', v_foto,
+                'nome', v_nome,
+                'data_nascimento', v_data_nascimento,
+                'idade', v_idade,
+                'cpf', v_cpf,
+                'grau_suporte', v_grau_suporte,
+                'serie_escolar', v_serie_escolar,
+                'grafico', v_habilidades,
+				'psicopedagogo', v_psicopedagogo,
+                'responsavel', v_responsaveis
+            )
+        );
 
     END IF;
 
 END $$
 
 DELIMITER ;
+
+CALL prc_buscar_paciente_completo(1, @resultPaciente);
+SELECT @resultPaciente;
 
 -- Adiciona o paciente
 DELIMITER $$
@@ -382,76 +466,3 @@ CREATE PROCEDURE prc_retorna_paciente_pelo_cpf(
 END$$
 
 DELIMITER ;
-
-drop view vw_data_paciente;
--- Dados do paciente (serie e grau de suporte ) pelo id
-CREATE VIEW vw_data_paciente AS
-SELECT
-	paciente.id as id_paciente,
-	paciente.nome,
-    paciente.foto,
-    paciente.data_nascimento,
-    paciente.idade,
-    paciente.cpf,
-    serie_escolar.serie,
-    grau_suporte.grau
-FROM tb_paciente paciente
-	JOIN tb_serie_escolar serie_escolar ON
-    serie_escolar.id = paciente.id_serie_escolar
-    JOIN tb_grau_suporte grau_suporte ON
-    grau_suporte.id = paciente.id_grau_suporte
-    ORDER BY paciente.id ASC;
-    
-SELECT * FROM vw_data_paciente WHERE id_paciente = 1;    
-
--- Diagnóstico do paciente pelo id
-CREATE VIEW vw_diagnostico_paciente AS
-SELECT
-	paciente.id as id_paciente,
-	diagnostico.id,
-    diagnostico.sigla,
-    diagnostico.nome_completo_transtorno
-FROM tb_sigla_transtorno diagnostico
-	JOIN tb_paciente_transtorno transtorno ON
-    transtorno.id_sigla_transtorno = diagnostico.id
-    JOIN tb_paciente paciente ON
-    transtorno.id_paciente = paciente.id
-    ORDER BY paciente.id ASC;
-
-SELECT * FROM vw_diagnostico_paciente WHERE id_paciente = 1; 
-
--- Psicopedagogo pelo id de paciente
-CREATE VIEW vw_psicopedagogo_paciente AS
-SELECT
-	paciente.id AS id_paciente,
-	usuario.id,
-    usuario.nome,
-    usuario.telefone
-FROM tb_usuario usuario
-	JOIN tb_usuario_paciente relacao ON
-    usuario.id = relacao.id_usuario
-    JOIN tb_paciente paciente ON
-    paciente.id = relacao.id_paciente
-    WHERE usuario.id_tipo_usuario = 1
-    ORDER BY paciente.id ASC;
-    
-SELECT * FROM vw_psicopedagogo_paciente WHERE id_paciente = 1; 
-
--- Responsaveis pelo id de paciente
-CREATE VIEW vw_responsavel_paciente AS
-SELECT
-	paciente.id AS id_paciente,
-	usuario.id,
-    usuario.nome,
-    usuario.telefone
-FROM tb_usuario usuario
-	JOIN tb_usuario_paciente relacao ON
-    usuario.id = relacao.id_usuario
-    JOIN tb_paciente paciente ON
-    paciente.id = relacao.id_paciente
-    WHERE usuario.id_tipo_usuario = 2
-    ORDER BY paciente.id ASC;
-    
-SELECT * FROM vw_responsavel_paciente WHERE id_paciente = 1; 
-    
-
