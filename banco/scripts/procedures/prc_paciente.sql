@@ -109,6 +109,7 @@ CREATE PROCEDURE prc_buscar_paciente_completo(
             'status', TRUE,
             'status_code', '200',
             'message', 'Paciente encontrado',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y'),
             'data', JSON_OBJECT(
                 'id', p_id_paciente,
                 'foto', v_foto,
@@ -130,7 +131,7 @@ END $$
 
 DELIMITER ;
 
-CALL prc_buscar_paciente_completo(1, @resultPaciente);
+CALL prc_buscar_paciente_completo(7, @resultPaciente);
 SELECT @resultPaciente;
 
 -- Adiciona o paciente
@@ -148,13 +149,14 @@ CREATE PROCEDURE prc_adicionar_paciente(
     OUT p_mensagem JSON
 ) BEGIN
 
+	DECLARE novo_id INT;
 	DECLARE data_hoje DATE;
     SET data_hoje = curdate();
 
 
     -- valida duplicidade
     IF EXISTS (
-        SELECT 1 FROM tb_paciente WHERE nome = p_nome
+        SELECT 1 FROM tb_paciente WHERE cpf = p_cpf
     ) THEN
 
         SET p_mensagem = JSON_OBJECT(
@@ -182,7 +184,7 @@ CREATE PROCEDURE prc_adicionar_paciente(
             'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
         
-	ELSEIF NOT EXISTS(SELECT 1 FROM tb_responsavel WHERE id = p_id_responsavel) THEN
+	ELSEIF NOT EXISTS(SELECT 1 FROM tb_usuario WHERE id = p_id_responsavel) THEN
 		
         SET p_mensagem = JSON_OBJECT(
             'status', FALSE,
@@ -191,6 +193,15 @@ CREATE PROCEDURE prc_adicionar_paciente(
             'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
 
+    ELSEIF (SELECT 1 FROM tb_usuario WHERE id = p_id_responsavel AND id_tipo_usuario = 1) THEN
+		
+        SET p_mensagem = JSON_OBJECT(
+            'status', FALSE,
+            'status_code', 401,
+            'message', 'Não foi possível processar a requisição pois faltam credenciais válidas!!!',
+            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        );
+    
     ELSE
 
         -- insert paciente
@@ -200,49 +211,66 @@ CREATE PROCEDURE prc_adicionar_paciente(
             cpf,
             data_nascimento,
             id_serie_escolar,
-            id_grau_suporte
+            id_grau_suporte,
+            id_usuario
         )
         VALUES (
-            v_foto,
+            p_foto,
             p_nome,
             p_cpf,
             p_data_nascimento,
             p_id_serie_escolar,
-            p_id_grau_suporte
+            p_id_grau_suporte,
+            p_id_responsavel
         );
 
         SET novo_id = LAST_INSERT_ID();
 
         -- vínculo responsável
-        INSERT INTO tb_responsavel_paciente(id_responsavel, id_paciente)
+        INSERT INTO tb_usuario_paciente(id_usuario, id_paciente)
         VALUES (p_id_responsavel, novo_id);
+
+        INSERT INTO tb_paciente_transtorno (id_paciente, id_sigla_transtorno)
+        SELECT novo_id, v_id_transtorno
+        FROM JSON_TABLE(
+			p_diagnostico,
+            '$[*]' COLUMNS (
+				v_id_transtorno INT PATH '$'
+            )
+        ) AS lista_transtornos;
+
+		
+        SET p_mensagem = JSON_OBJECT(
+            'status', TRUE,
+            'status_code', '201',
+            'message', 'Item criado com sucesso!!!',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        );
         
-        INSERT INTO tb_paciente_habilidade (id_paciente, id_habilidade, anos_meses)
-		SELECT novo_id AS id_paciente,
-		h.id,
-        0.0 AS anos_meses
-		FROM tb_habilidade h
-        WHERE NOT EXISTS (
-            SELECT 1
-            FROM tb_paciente_habilidade ph
-            WHERE ph.id_paciente = novo_id
-              AND ph.id_habilidade = h.id
-        );
-
-        CALL prc_buscar_paciente_completo(novo_id, p_mensagem);
-
-        -- sobrescreve mensagem padrão
-        SET p_mensagem = JSON_SET(
-            p_mensagem,
-            '$.message',
-            'Paciente cadastrado com sucesso'
-        );
+        CALL prc_buscar_paciente_completo(novo_id, @resultPaciente);
 
     END IF;
 
 END $$
 
 DELIMITER ;
+
+select * from tb_paciente;
+CALL prc_adicionar_paciente(
+	null,
+    'Marcelo Rezende',
+    '[1, 2, 3]',
+    '12345678901',
+    '2005-05-10',
+    6,
+    2,
+    2,
+    @resultCreatePaciente
+);
+
+drop procedure prc_adicionar_paciente;
+SELECT @resultCreatePaciente;
+SELECT @resultPaciente;
 
 -- Atualiza dados do paciente
 DELIMITER $$
