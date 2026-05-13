@@ -3,14 +3,14 @@
 -- v = variavel
 -- ------------------------------
 
--- drop procedure prc_usuario;
--- drop procedure prc_home;
--- drop procedure prc_usuario_login;
--- drop procedure prc_cria_usuario;
--- drop procedure prc_atualiza_usuario;
--- drop procedure prc_solicita_redefinicao_senha;
--- drop procedure prc_atualiza_senha_usuario;
--- drop procedure prc_deleta_usuario;
+drop procedure prc_usuario;
+drop procedure prc_home;
+drop procedure prc_usuario_login;
+drop procedure prc_cria_usuario;
+drop procedure prc_atualiza_usuario;
+drop procedure prc_solicita_redefinicao_senha;
+drop procedure prc_atualiza_senha_usuario;
+drop procedure prc_deleta_usuario;
 
 DELIMITER $$
 
@@ -39,7 +39,7 @@ CREATE PROCEDURE prc_usuario(
             'status', FALSE,
             'status_code', 404,
             'message', 'Não foram encontrados dados de retorno!!!',
-            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
     ELSE
 		
@@ -52,8 +52,8 @@ CREATE PROCEDURE prc_usuario(
 			'status', TRUE,
             'status_code', 200,
             'message', 'Requisição bem sucedida!!!',
-            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y'),
-            'usuario', JSON_OBJECT(
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y'),
+            'data', JSON_OBJECT(
 				'id', p_id,
                 'foto', v_foto,
                 'nome', v_nome,
@@ -92,7 +92,7 @@ CREATE PROCEDURE prc_usuario_login(
             'status', FALSE,
             'status_code', 404,
             'message', 'Não foram encontrados dados de retorno!!!',
-            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
 
     ELSE 
@@ -101,7 +101,7 @@ CREATE PROCEDURE prc_usuario_login(
             'status', TRUE,
             'status_code', 200,
             'message', 'Requisição feita com sucesso!!!',
-            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
         
         CALL prc_home(v_id, @resultHome);
@@ -138,7 +138,7 @@ CREATE PROCEDURE prc_home(
             'status', FALSE,
             'status_code', 404,
             'message', 'Não foram encontrados dados de retorno!!!',
-            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
 	
     ELSE
@@ -193,12 +193,13 @@ CREATE PROCEDURE prc_home(
             'status', TRUE,
             'status_code', 200,
             'message', 'Requisição bem sucedida!!!',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y'),
             'data', JSON_OBJECT(
                 'id', p_id_usuario,
                 'foto', v_foto,
                 'nome', v_nome,
                 'tipo_usuario', v_tipo_usuario,
-                'pacientes', return_object
+                'pacientes', return_object                
             )
         );
         
@@ -208,6 +209,7 @@ CREATE PROCEDURE prc_home(
             'status', TRUE,
             'status_code', 200,
             'message', 'Requisição bem sucedida!!!',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y'),
             'data', JSON_OBJECT(
                 'id', p_id_usuario,
                 'foto', v_foto,
@@ -224,7 +226,7 @@ CREATE PROCEDURE prc_home(
 END$$
 
 DELIMITER ;
-    
+
 DELIMITER $$
 
 CREATE PROCEDURE prc_cria_usuario(
@@ -251,7 +253,7 @@ CREATE PROCEDURE prc_cria_usuario(
 			'status', FALSE,
             'status_code', 409,
             'message', 'Existem dados de inserção já cadastrados no sistema!!!',
-            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
         
     ELSE
@@ -276,7 +278,7 @@ CREATE PROCEDURE prc_cria_usuario(
 			'status', TRUE,
             'status_code', 201,
             'message', 'Cadastro bem sucedido!!!',
-            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
         
 		CALL prc_usuario_login(p_email, p_senha, @idUsuarioLogin, @resultUsuarioLogin);
@@ -310,12 +312,23 @@ CREATE PROCEDURE prc_atualiza_usuario(
 		'status', FALSE,
 		'status_code', 404,
 		'message', 'Não foram encontrados dados de retorno!!!',
-		'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
     );
 	
-    ELSE
-		
-        UPDATE tb_usuario SET
+    ELSEIF EXISTS (
+		SELECT 1 
+        FROM tb_usuario
+        WHERE email = p_email AND id != p_id
+    ) THEN SET p_message = JSON_OBJECT(
+		'status', FALSE,
+		'status_code', 409,
+		'message', 'Existem dados de inserção já cadastrados no sistema!!!',
+		'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+	);
+	
+	ELSE
+	
+		UPDATE tb_usuario SET
 			foto = p_foto,
             nome = p_nome,
             email = p_email,
@@ -327,8 +340,10 @@ CREATE PROCEDURE prc_atualiza_usuario(
             'status', TRUE,
             'status_code', 200,
             'message', 'Item atualizado com sucesso!!!',
-            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
+        
+        CALL prc_usuario(p_id, @resultUsuario);
     
     END IF;
     
@@ -354,7 +369,7 @@ CREATE PROCEDURE prc_solicita_redefinicao_senha(
 			'status', FALSE,
 			'status_code', 404,
 			'message', 'Não foram encontrados dados de retorno!!!',
-			'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
     
     ELSE
@@ -363,7 +378,7 @@ CREATE PROCEDURE prc_solicita_redefinicao_senha(
 			'status', TRUE,
 			'status_code', 200,
 			'message', 'Requisição bem sucedida!!!',
-			'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
     
     END IF;
@@ -391,7 +406,7 @@ CREATE PROCEDURE prc_atualiza_senha_usuario(
 			'status', FALSE,
 			'status_code', 404,
 			'message', 'Não foram encontrados dados de retorno!!!',
-			'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
 			
     ELSE
@@ -404,8 +419,10 @@ CREATE PROCEDURE prc_atualiza_senha_usuario(
             'status', TRUE,
             'status_code', 200,
             'message', 'Item atualizado com sucesso!!!',
-            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
+        
+        CALL prc_home(p_id, @resultHome);
     
     END IF;
 
@@ -434,7 +451,7 @@ CREATE PROCEDURE prc_deleta_usuario(
 		'status', FALSE,
 		'status_code', 404,
 		'message', 'Não foram encontrados dados de retorno!!!',
-		'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
     );
     
     ELSEIF (
@@ -449,16 +466,16 @@ CREATE PROCEDURE prc_deleta_usuario(
             'status', TRUE,
             'status_code', 200,
             'message', 'Item deletado com sucesso!!!',
-            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
     
     ELSE 
 		
         SET p_message = JSON_OBJECT(
 		'status', FALSE,
-		'status_code', 207,
-		'message', 'Um dos campos fornecidos está errado!!!',
-		'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		'status_code', 401,
+		'message', 'Não foi possível processar a requisição pois faltam credenciais válidas!!!',
+		'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         
     );
     
