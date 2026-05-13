@@ -1,3 +1,8 @@
+-- --------- Legenda ------------
+-- p = parametro
+-- v = variavel
+-- ------------------------------
+
 DELIMITER $$
 
 CREATE PROCEDURE proc_cria_habilidades_paciente(

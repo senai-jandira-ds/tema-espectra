@@ -29,7 +29,7 @@ CREATE TABLE tb_usuario(
 CREATE TABLE tb_sigla_transtorno(
 
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-    sigla VARCHAR(10) NOT NULL,
+    sigla VARCHAR(20) NOT NULL,
     nome_completo_transtorno VARCHAR(100) NOT NULL
 
 );
@@ -116,7 +116,7 @@ CREATE TABLE tb_habilidade(
 CREATE TABLE tb_paciente_habilidade(
 		
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-	anos_meses DECIMAL(10,3) NOT NULL,
+	idade_meses DECIMAL(10,1) NOT NULL,
 	id_paciente INT NOT NULL,
 	id_habilidade INT NOT NULL,
 	
@@ -129,13 +129,13 @@ CREATE TABLE tb_paciente_habilidade(
         
 );
 
-
 -- Atividade
 CREATE TABLE tb_faixa_idade(
 	
     id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
     idade_min INT NOT NULL,
-    idade_max INT NOT NULL
+    idade_max INT NOT NULL,
+    valor_atividade DECIMAL(10, 4) NOT NULL
     
 );
 
@@ -160,7 +160,6 @@ CREATE TABLE tb_atividade_portage(
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
 	numero_questao INT NOT NULL,
 	comportamento VARCHAR(300) NOT NULL,
-    valor_atividade DECIMAL(10, 3) NOT NULL,
 	id_faixa_idade INT NOT NULL,
 	id_habilidade INT NOT NULL,
 	
@@ -246,6 +245,4 @@ CREATE TABLE tb_formulario(
 		FOREIGN KEY (id_resposta)  REFERENCES tb_resposta_formulario(id)
     
     );
-    
-
     
