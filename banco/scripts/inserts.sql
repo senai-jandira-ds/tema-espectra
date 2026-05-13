@@ -37,12 +37,12 @@ INSERT INTO tb_grau_suporte (grau) VALUES
 ('GRAU 3');
 
 
-INSERT INTO tb_paciente (foto, nome, cpf, data_nascimento, idade, id_serie_escolar, id_grau_suporte, id_usuario) VALUES
-(NULL, 'Lucas Andrade', '68212059812', '2015-04-10', timestampdiff(YEAR, data_nascimento, CURDATE()), 4, 1, 1),
-(NULL, 'Beatriz Oliveira', '75287318898', '2013-09-22', timestampdiff(YEAR, data_nascimento, CURDATE()), 6, 2, 1),
-(NULL, 'Pedro Santos', '71121093884', '2011-01-30', timestampdiff(YEAR, data_nascimento, CURDATE()), 8, 1, 1),
-(NULL, 'Juliana Costa', '50773850848', '2016-07-15', timestampdiff(YEAR, data_nascimento, CURDATE()), 3, 2, 2),
-(NULL, 'Rafael Mendes', '50805139850', '2010-12-05', timestampdiff(YEAR, data_nascimento, CURDATE()), 9, 3, 2);
+INSERT INTO tb_paciente (foto, nome, cpf, data_nascimento, id_serie_escolar, id_grau_suporte, id_usuario) VALUES
+(NULL, 'Lucas Andrade', '68212059812', '2015-04-10', 4, 1, 1),
+(NULL, 'Beatriz Oliveira', '75287318898', '2013-09-22', 6, 2, 1),
+(NULL, 'Pedro Santos', '71121093884', '2011-01-30', 8, 1, 1),
+(NULL, 'Juliana Costa', '50773850848', '2016-07-15', 3, 2, 2),
+(NULL, 'Rafael Mendes', '50805139850', '2010-12-05', 9, 3, 2);
 
 INSERT INTO tb_usuario_paciente (id_paciente, id_usuario) VALUES
 (1, 1),

@@ -16,7 +16,6 @@ CREATE PROCEDURE prc_buscar_paciente_completo(
     DECLARE v_nome VARCHAR(150);
     DECLARE v_foto VARCHAR(255);
     DECLARE v_data_nascimento DATE;
-    DECLARE v_idade INT;
     DECLARE v_cpf VARCHAR(20);
     DECLARE v_serie_escolar VARCHAR(30);
     DECLARE v_grau_suporte VARCHAR(30);
@@ -45,8 +44,8 @@ CREATE PROCEDURE prc_buscar_paciente_completo(
     ELSE
 
         -- PACIENTE
-        SELECT nome, foto, data_nascimento, idade, cpf, serie, grau
-        INTO v_nome, v_foto, v_data_nascimento, v_idade, v_cpf, v_serie_escolar, v_grau_suporte
+        SELECT nome, foto, data_nascimento, cpf, serie, grau
+        INTO v_nome, v_foto, v_data_nascimento, v_cpf, v_serie_escolar, v_grau_suporte
         FROM vw_data_paciente WHERE id_paciente = p_id_paciente;
 
 		-- DIAGNÓSTICO
@@ -115,7 +114,7 @@ CREATE PROCEDURE prc_buscar_paciente_completo(
                 'foto', v_foto,
                 'nome', v_nome,
                 'data_nascimento', v_data_nascimento,
-                'idade', v_idade,
+                'idade', TIMESTAMPDIFF(YEAR, v_data_nascimento, CURDATE()),
                 'cpf', v_cpf,
                 'grau_suporte', v_grau_suporte,
                 'serie_escolar', v_serie_escolar,
@@ -138,18 +137,20 @@ SELECT @resultPaciente;
 DELIMITER $$
 
 CREATE PROCEDURE prc_adicionar_paciente(
-    IN p_nome VARCHAR(150),
     IN p_foto VARCHAR(255),
+	IN p_nome VARCHAR(150),
+    IN p_diagnostico VARCHAR(400),
+    IN p_cpf VARCHAR(20),
     IN p_data_nascimento DATE,
-    IN p_diagnostico VARCHAR(50),
     IN p_id_serie_escolar INT,
     IN p_id_grau_suporte INT,
     IN p_id_responsavel INT,
     OUT p_mensagem JSON
 ) BEGIN
 
-    DECLARE v_numero_registro VARCHAR(20);
-    DECLARE novo_id INT;
+	DECLARE data_hoje DATE;
+    SET data_hoje = curdate();
+
 
     -- valida duplicidade
     IF EXISTS (
@@ -159,8 +160,8 @@ CREATE PROCEDURE prc_adicionar_paciente(
         SET p_mensagem = JSON_OBJECT(
             'status', FALSE,
             'status_code', 409,
-            'message', 'Este paciente já existe',
-            'data', NULL
+            'message', 'Dados de inserção foram encontrados já cadastrados!!!',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
         
 	ELSEIF NOT EXISTS(SELECT 1 FROM tb_serie_escolar WHERE id = p_id_serie_escolar) THEN
@@ -168,8 +169,8 @@ CREATE PROCEDURE prc_adicionar_paciente(
         SET p_mensagem = JSON_OBJECT(
             'status', FALSE,
             'status_code', 400,
-            'message', 'id_serie_esolar Incorreto',
-            'data', NULL
+            'message', 'Não foi possível processar a requisição pois existem campos obrigatórios que devem ser encaminhados, e atendidos conforme documentação!!! [ID SÉRIE ESCOLAR]',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
         
 	ELSEIF NOT EXISTS(SELECT 1 FROM tb_grau_suporte WHERE id = p_id_grau_suporte) THEN
@@ -177,8 +178,8 @@ CREATE PROCEDURE prc_adicionar_paciente(
         SET p_mensagem = JSON_OBJECT(
             'status', FALSE,
             'status_code', 400,
-            'message', 'id_grau_suporte Incorreto',
-            'data', NULL
+            'message', 'Não foi possível processar a requisição pois existem campos obrigatórios que devem ser encaminhados, e atendidos conforme documentação!!! [ID GRAU DE SUPORTE]',
+            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
         
 	ELSEIF NOT EXISTS(SELECT 1 FROM tb_responsavel WHERE id = p_id_responsavel) THEN
@@ -186,43 +187,26 @@ CREATE PROCEDURE prc_adicionar_paciente(
         SET p_mensagem = JSON_OBJECT(
             'status', FALSE,
             'status_code', 400,
-            'message', 'id_responsavel Incorreto',
-            'data', NULL
+            'message', 'Não foi possível processar a requisição pois existem campos obrigatórios que devem ser encaminhados, e atendidos conforme documentação!!! [ID RESPONSAVEL]',
+            'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
-    
-    
 
     ELSE
 
-        -- gera número de registro
-        SELECT CONCAT(
-            DATE_FORMAT(NOW(), '%Y%m'),
-            LPAD(
-                IFNULL(MAX(SUBSTRING(numero_registro, 7, 4)), 0) + 1,
-                4,
-                '0'
-            )
-        )
-        INTO v_numero_registro
-        FROM tb_paciente
-        WHERE numero_registro LIKE CONCAT(DATE_FORMAT(NOW(), '%Y%m'), '%');
-
         -- insert paciente
         INSERT INTO tb_paciente(
-            numero_registro,
-            nome,
             foto,
+            nome,
+            cpf,
             data_nascimento,
-            diagnostico,
             id_serie_escolar,
             id_grau_suporte
         )
         VALUES (
-            v_numero_registro,
+            v_foto,
             p_nome,
-            p_foto,
+            p_cpf,
             p_data_nascimento,
-            p_diagnostico,
             p_id_serie_escolar,
             p_id_grau_suporte
         );

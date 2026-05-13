@@ -11,7 +11,6 @@ SELECT
 	paciente.nome as nome,
     paciente.foto as foto,
     paciente.data_nascimento as data_nascimento,
-    paciente.idade as idade,
     paciente.cpf as cpf,
     serie_escolar.serie as serie,
     grau_suporte.grau as grau
