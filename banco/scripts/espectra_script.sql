@@ -1880,6 +1880,7 @@ DELIMITER $$
 
 CREATE PROCEDURE prc_atualizar_paciente(
 
+	IN p_id_usuario INT,
 	IN p_id_paciente INT,
 	IN p_nome VARCHAR(150),
     IN p_foto VARCHAR(255),
@@ -1895,7 +1896,26 @@ CREATE PROCEDURE prc_atualizar_paciente(
 	DECLARE data_hoje DATE;
     SET data_hoje = curdate();
     
-    IF NOT EXISTS(SELECT 1 FROM tb_paciente WHERE id = p_id_paciente) THEN
+    IF NOT EXISTS(SELECT 1 FROM tb_usuario WHERE id = p_id_usuario) THEN 
+    
+		SET p_mensagem = JSON_OBJECT(
+            'status', FALSE,
+			'status_code', 404,
+            'message', 'Não foram encontrados, dados de retorno!!!',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		);
+        
+    ELSEIF NOT EXISTS(SELECT 1 FROM tb_usuario WHERE id = p_id_usuario AND id_tipo_usuario = 2) THEN
+    
+		SET p_mensagem = JSON_OBJECT(
+			'status', TRUE,
+			'status_code', 401,
+			'message', 'Não autorizado',
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		);
+		
+    
+    ELSEIF NOT EXISTS(SELECT 1 FROM tb_paciente WHERE id = p_id_paciente) THEN
     
 		SET p_mensagem = JSON_OBJECT(
             'status', FALSE,
