@@ -288,6 +288,14 @@ CREATE PROCEDURE prc_atualizar_paciente(
 			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
 		
+	ELSEIF NOT EXISTS(SELECT 1 FROM tb_usuario_paciente WHERE id_paciente = p_id_paciente AND id_usuario = p_id_usuario) THEN
+    
+		SET p_mensagem = JSON_OBJECT(
+			'status', TRUE,
+			'status_code', 401,
+			'message', 'Não autorizado',
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		);
     
     ELSEIF NOT EXISTS(SELECT 1 FROM tb_paciente WHERE id = p_id_paciente) THEN
     
@@ -381,6 +389,15 @@ CREATE PROCEDURE proc_delete_paciente(
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
 	
+    ELSEIF NOT EXISTS (SELECT 1 FROM tb_usuario_paciente WHERE id_usuario = p_id_usuario AND id_paciente = p_id_paciente) THEN
+    
+		SET p_mensagem = JSON_OBJECT(
+            'status', FALSE,
+			'status_code', 404,
+            'message', 'Paciente não encontrado',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		);
+    
     ELSE
 		
         IF  EXISTS (SELECT 1 FROM tb_usuario WHERE id = p_id_usuario AND id_tipo_usuario = 2) THEN
@@ -400,8 +417,8 @@ CREATE PROCEDURE proc_delete_paciente(
             );
         
         ELSEIF EXISTS (SELECT 1 FROM tb_usuario WHERE id = p_id_usuario AND id_tipo_usuario = 1) THEN
-        
-			DELETE FROM tb_usuario_paciente 	WHERE id_paciente = p_id_usuario;
+			
+			DELETE FROM tb_usuario_paciente WHERE id_paciente = p_id_paciente AND id_usuario = p_id_usuario;
         
 			SET p_mensagem = JSON_OBJECT(
 				'status', TRUE,
@@ -464,9 +481,9 @@ CREATE PROCEDURE prc_inserir_relacao_usuario_paciente(
         
 	ELSEIF EXISTS (
         SELECT 1 
-        FROM tb_responsavel_paciente 
+        FROM tb_usuario_paciente 
         WHERE id_paciente = p_id_paciente 
-          AND id_responsavel = p_id_responsavel
+          AND id_usuario = p_id_usuario
     ) THEN
     
         SET p_mensagem = JSON_OBJECT(
@@ -493,67 +510,6 @@ CREATE PROCEDURE prc_inserir_relacao_usuario_paciente(
     END IF;
 
 END $$
-
-DELIMITER ;
-
-DELIMITER $$
-
-CREATE PROCEDURE prc_retorna_paciente_pelo_cpf(
-
-	IN p_cpf VARCHAR(20),
-    OUT p_message JSON
-
-) BEGIN
-	
-	DECLARE v_id INT;
-    DECLARE v_nome VARCHAR(150);
-    DECLARE v_foto VARCHAR(255);
-    DECLARE v_data_nascimento DATE;
-    DECLARE v_serie VARCHAR(30);
-    DECLARE v_grau VARCHAR(30);
-	DECLARE data_hoje DATE;
-    SET data_hoje = curdate();
-
-	IF NOT EXISTS(
-		SELECT 1
-        FROM tb_paciente
-        WHERE cpf = p_cpf
-    ) THEN  SET p_message = JSON_OBJECT(
-            'status', FALSE,
-            'status_code', 404,
-            'message', 'Paciente não encontrado',
-            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
-        );
-    
-    ELSE
-    
-		SELECT id_paciente, nome, foto, data_nascimento, serie, grau 
-        FROM vw_data_paciente WHERE cpf = p_cpf
-        INTO v_id, v_nome, v_foto, v_data_nascimento, v_serie, v_grau;
-        
-        
-        SET p_message = JSON_OBJECT(
-			'status', TRUE,
-            'status_code', 200,
-            'message', 'Requisição bem sucedida!!!',
-            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y'),
-            'data', JSON_OBJECT(
-            
-				'id', v_id,
-                'nome', v_nome,
-                'foto', v_foto,
-                'cpf', p_cpf,
-                'data_nascimento', DATE_FORMAT(v_data_nascimento, '%d/%m/%Y'),
-                'idade', TIMESTAMPDIFF(YEAR, v_data_nascimento, CURDATE()),
-                'serie_escolar', v_serie,
-                'grau_suporte', v_grau
-            
-            )
-        );
-    
-    END IF;
-
-END$$
 
 DELIMITER ;
 

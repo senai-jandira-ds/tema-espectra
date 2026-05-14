@@ -1914,6 +1914,14 @@ CREATE PROCEDURE prc_atualizar_paciente(
 			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
 		
+	ELSEIF NOT EXISTS(SELECT 1 FROM tb_usuario_paciente WHERE id_paciente = p_id_paciente AND id_usuario = p_id_usuario) THEN
+    
+		SET p_mensagem = JSON_OBJECT(
+			'status', TRUE,
+			'status_code', 401,
+			'message', 'Não autorizado',
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		);
     
     ELSEIF NOT EXISTS(SELECT 1 FROM tb_paciente WHERE id = p_id_paciente) THEN
     
@@ -2007,6 +2015,15 @@ CREATE PROCEDURE proc_delete_paciente(
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
 	
+    ELSEIF NOT EXISTS (SELECT 1 FROM tb_usuario_paciente WHERE id_usuario = p_id_usuario AND id_paciente = p_id_paciente) THEN
+    
+		SET p_mensagem = JSON_OBJECT(
+            'status', FALSE,
+			'status_code', 404,
+            'message', 'Paciente não encontrado',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		);
+    
     ELSE
 		
         IF  EXISTS (SELECT 1 FROM tb_usuario WHERE id = p_id_usuario AND id_tipo_usuario = 2) THEN
@@ -2026,8 +2043,8 @@ CREATE PROCEDURE proc_delete_paciente(
             );
         
         ELSEIF EXISTS (SELECT 1 FROM tb_usuario WHERE id = p_id_usuario AND id_tipo_usuario = 1) THEN
-        
-			DELETE FROM tb_usuario_paciente 	WHERE id_paciente = p_id_usuario;
+			
+			DELETE FROM tb_usuario_paciente WHERE id_paciente = p_id_paciente AND id_usuario = p_id_usuario;
         
 			SET p_mensagem = JSON_OBJECT(
 				'status', TRUE,
@@ -2090,9 +2107,9 @@ CREATE PROCEDURE prc_inserir_relacao_usuario_paciente(
         
 	ELSEIF EXISTS (
         SELECT 1 
-        FROM tb_responsavel_paciente 
+        FROM tb_usuario_paciente 
         WHERE id_paciente = p_id_paciente 
-          AND id_responsavel = p_id_responsavel
+          AND id_usuario = p_id_usuario
     ) THEN
     
         SET p_mensagem = JSON_OBJECT(
