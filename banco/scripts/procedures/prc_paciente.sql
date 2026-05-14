@@ -488,7 +488,7 @@ CREATE PROCEDURE prc_inserir_relacao_usuario_paciente(
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
         
-        CALL prc_buscar_paciente_completo(p_id_paciente, @resultUsuario);
+        CALL prc_buscar_paciente_completo(p_id_paciente, @resultPaciente);
 
     END IF;
 
@@ -620,7 +620,7 @@ DELIMITER ;
 
 
 -- @returnPacienteCpf
--- @resultUsuario
+-- @resultPaciente
 -- @resultDeletePaciente
 -- @resultInsertRelation
 -- @resultUpdatePaciente
