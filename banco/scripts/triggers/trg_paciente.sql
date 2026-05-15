@@ -31,3 +31,16 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_delete_diagnostico_paciente
+BEFORE UPDATE ON tb_paciente
+FOR EACH ROW
+BEGIN
+
+	DELETE FROM tb_paciente_transtorno WHERE id_paciente = OLD.id;
+
+END $$
+
+DELIMITER ;

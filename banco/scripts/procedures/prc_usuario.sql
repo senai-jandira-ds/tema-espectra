@@ -156,7 +156,7 @@ CREATE PROCEDURE prc_home(
                 'foto', paciente.foto,
                 'nome', paciente.nome,
                 'data_nascimento', DATE_FORMAT(paciente.data_nascimento, '%d/%m/%Y'),
-                'idade', paciente.idade,
+                'idade', TIMESTAMPDIFF(YEAR, paciente.data_nascimento, CURDATE()),
                 'cpf', paciente.cpf,
                 'serie_escolar', serie.serie,
                 'grau_suporte', grau_suporte.grau,

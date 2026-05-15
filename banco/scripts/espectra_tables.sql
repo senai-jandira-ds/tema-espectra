@@ -55,7 +55,6 @@ CREATE TABLE tb_paciente(
     cpf VARCHAR(20) NOT NULL,
  	nome VARCHAR(150) NOT NULL,
     data_nascimento DATE NOT NULL,
-    idade INT NOT NULL,
     id_serie_escolar INT NOT NULL,
     id_grau_suporte INT NOT NULL,
     id_usuario INT NOT NULL,
