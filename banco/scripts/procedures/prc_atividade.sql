@@ -347,3 +347,139 @@ CREATE PROCEDURE prc_delete_atividade(
 END$$
 
 DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE prc_atividades(
+	IN p_id_paciente INT,
+    IN p_id_habilidade INT,
+    OUT p_message JSON
+) BEGIN
+
+	DECLARE atividades_portage JSON;
+	DECLARE atividades_personalizadas JSON;
+
+	DECLARE data_hoje DATE;
+    SET data_hoje = CURDATE();
+
+	IF NOT EXISTS(SELECT 1 FROM tb_paciente WHERE id = p_id_paciente) THEN
+		
+        SET p_message = JSON_OBJECT(
+        
+			'status', FALSE,
+			'status_code', 404,
+			'message', 'Não foram encontrados dados de retorno!!!',
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        
+        );
+    
+	ELSEIF NOT EXISTS(SELECT 1 FROM tb_habilidade WHERE id = p_id_habilidade) THEN
+    
+		SET p_message = JSON_OBJECT(
+        
+			'status', FALSE,
+			'status_code', 404,
+			'message', 'Não foram encontrados dados de retorno!!!',
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        
+        );
+    
+	ELSE
+    
+		-- portage
+		SELECT JSON_ARRAYAGG(
+			JSON_OBJECT(
+				
+                'id_atividade', id_atividade,
+                'concluida', concluida,
+                'numero_questao', numero_questao,
+                'comportamento', comportamento,
+                'id_habilidade', id_habilidade,
+                'nome_habilidade', nome_habilidade
+            
+            )
+        )
+        FROM vw_todas_atividades
+        WHERE tipo_atividade = 'Portage'
+        AND id_paciente = p_id_paciente
+        AND id_habilidade = p_id_habilidade
+		INTO atividades_portage;
+        
+        SELECT JSON_ARRAYAGG(
+			JSON_OBJECT(
+				
+                'id_atividade', id_atividade,
+                'concluida', concluida,
+                'comportamento', comportamento,
+                'id_habilidade', id_habilidade,
+                'nome_habilidade', nome_habilidade,
+                'valor_meses', valor_meses
+            
+            )
+        )
+        FROM vw_todas_atividades
+        WHERE tipo_atividade = 'Personalizada'
+        AND id_paciente = p_id_paciente
+        AND id_habilidade = p_id_habilidade
+		INTO atividades_personalizadas;
+        
+        SET p_message = JSON_OBJECT(
+			
+			'status', TRUE,
+			'status_code', '200',
+			'message', 'Requisição feita com sucesso!!',
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y'),
+			'data', JSON_OBJECT(
+					
+                    'atividades_personalizadas', atividades_personalizadas,
+                    'atividades_portage', atividades_portage
+				
+			)
+            
+        );
+    
+    END IF;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE prc_atualiza_status_atividade(
+	IN p_id_atividade INT,
+    OUT p_message JSON
+) BEGIN
+
+	DECLARE data_hoje DATE;
+    SET data_hoje = CURDATE();
+
+	IF NOT EXISTS(SELECT 1 FROM tb_atividade WHERE id = p_id_atividade) THEN
+    
+		SET p_message = JSON_OBJECT(
+        
+			'status', FALSE,
+			'status_code', 404,
+			'message', 'Não foram encontrados dados de retorno!!!',
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        
+        );
+		
+    ELSE
+		
+		UPDATE tb_atividade SET
+			concluida = TRUE
+		WHERE id = p_id_atividade;
+        
+        SET p_message = JSON_OBJECT(
+			'status', TRUE,
+            'status_code', 200,
+            'message', 'Item atualizado com sucesso!!!',
+            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+		);
+    
+    END IF;
+
+END$$
+
+DELIMITER ;

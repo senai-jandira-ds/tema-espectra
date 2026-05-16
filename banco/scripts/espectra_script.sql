@@ -245,6 +245,12 @@ CREATE TABLE tb_formulario(
     
     );
 
+-- ----------------------------------
+-- INSERTS
+-- ----------------------------------
+USE db_espectra;
+
+
 INSERT INTO tb_tipo_usuario(tipo_usuario) VALUES ('Psicopedagogo'),('Responsável');
 
 
@@ -996,9 +1002,8 @@ ORDER BY id ASC;
 INSERT INTO tb_formulario (id_paciente, id_atividade_portage, id_resposta)
 SELECT 5, id, NULL 
 FROM tb_atividade_portage 
-ORDER BY id ASC;    
+ORDER BY id ASC;
 
--- Dados do paciente (serie e grau de suporte ) pelo id
 CREATE VIEW vw_data_paciente AS
 SELECT
 	paciente.id as id_paciente,
@@ -1087,6 +1092,75 @@ FROM tb_formulario formulario
 	JOIN tb_atividade_portage atividade ON
     atividade.id = formulario.id_atividade_portage
     ORDER BY id_atividade_portage ASC;
+
+CREATE VIEW vw_atividade_portage AS
+SELECT
+	'Portage' as tipo_atividade,
+	tb_atividade.id as id_atividade,
+    tb_atividade.concluida as concluida,
+    tb_atividade_portage.numero_questao as numero_questao,
+    tb_atividade_portage.comportamento as comportamento,
+    tb_habilidade.id as id_habilidade,
+    tb_habilidade.nome as nome_habilidade
+    
+    FROM tb_atividade
+    JOIN tb_atividade_portage ON
+    tb_atividade.id_atividade_portage = tb_atividade_portage.id
+    JOIN tb_habilidade ON
+    tb_habilidade.id = tb_atividade_portage.id_habilidade;
+    
+CREATE VIEW vw_atividade_personalizada AS
+SELECT
+	'Personalizada' as tipo_atividade,
+	tb_atividade.id as id_atividade,
+    tb_atividade.concluida as concluida,
+    tb_atividade_personalizada.comportamento as comportamento,
+    tb_atividade_personalizada.valor_meses as valor_meses,
+    tb_habilidade.id as id_habilidade,
+    tb_habilidade.nome as nome_habilidade
+	
+    FROM tb_atividade
+    JOIN tb_atividade_personalizada ON
+    tb_atividade_personalizada.id = tb_atividade.id_atividade_personalizada
+	JOIN tb_habilidade ON
+    tb_habilidade.id = tb_atividade_personalizada.id_habilidade;
+
+CREATE VIEW vw_todas_atividades AS
+SELECT
+	tb_atividade.id_paciente as id_paciente,
+	'Portage' as tipo_atividade,
+	tb_atividade.id as id_atividade,
+    tb_atividade.concluida as concluida,
+    tb_atividade_portage.numero_questao as numero_questao,
+    tb_atividade_portage.comportamento as comportamento,
+    tb_habilidade.id as id_habilidade,
+    tb_habilidade.nome as nome_habilidade,
+    NULL as valor_meses
+    
+    FROM tb_atividade
+    JOIN tb_atividade_portage ON
+    tb_atividade.id_atividade_portage = tb_atividade_portage.id
+    JOIN tb_habilidade ON
+    tb_habilidade.id = tb_atividade_portage.id_habilidade
+    
+    UNION ALL
+
+SELECT
+	tb_atividade.id_paciente as id_paciente,
+    'Personalizada' as tipo_atividade,
+	tb_atividade.id as id_atividade,
+    tb_atividade.concluida as concluida,
+    NULL AS numero_questao,
+    tb_atividade_personalizada.comportamento as comportamento,
+    tb_habilidade.id as id_habilidade,
+    tb_habilidade.nome as nome_habilidade,
+    tb_atividade_personalizada.valor_meses as valor_meses
+	
+    FROM tb_atividade
+    JOIN tb_atividade_personalizada ON
+    tb_atividade_personalizada.id = tb_atividade.id_atividade_personalizada
+	JOIN tb_habilidade ON
+    tb_habilidade.id = tb_atividade_personalizada.id_habilidade;
 
 DELIMITER $$
 
@@ -2297,6 +2371,53 @@ DELIMITER ;
 
 DELIMITER $$
 
+CREATE TRIGGER trg_habilidade_paciente
+AFTER INSERT ON tb_paciente
+FOR EACH ROW
+BEGIN
+
+	INSERT INTO tb_paciente_habilidade(id_paciente, id_habilidade, idade_meses) VALUES
+    (NEW.id, 1, 0.0),
+    (NEW.id, 2, 0.0),
+    (NEW.id, 3, 0.0),
+    (NEW.id, 4, 0.0),
+    (NEW.id, 5, 0.0);
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_formulario_paciente
+AFTER INSERT ON tb_paciente
+FOR EACH ROW
+BEGIN
+    
+	INSERT INTO tb_formulario(id_paciente, id_atividade_portage, id_resposta)
+    SELECT NEW.id, id, NULL
+    FROM tb_atividade_portage
+    ORDER BY id ASC;
+
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_delete_diagnostico_paciente
+BEFORE UPDATE ON tb_paciente
+FOR EACH ROW
+BEGIN
+
+	DELETE FROM tb_paciente_transtorno WHERE id_paciente = OLD.id;
+
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
 CREATE TRIGGER trg_update_idade_formulario
 AFTER UPDATE ON tb_formulario
 FOR EACH ROW
@@ -2379,33 +2500,12 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE TRIGGER trg_habilidade_paciente
-AFTER INSERT ON tb_paciente
-FOR EACH ROW
-BEGIN
-
-	INSERT INTO tb_paciente_habilidade(id_paciente, id_habilidade, idade_meses) VALUES
-    (NEW.id, 1, 0.0),
-    (NEW.id, 2, 0.0),
-    (NEW.id, 3, 0.0),
-    (NEW.id, 4, 0.0),
-    (NEW.id, 5, 0.0);
-
-END$$
-
-DELIMITER ;
-
-DELIMITER $$
-
-CREATE TRIGGER trg_formulario_paciente
-AFTER INSERT ON tb_paciente
+CREATE TRIGGER trg_deleta_tentativas_atividade
+BEFORE DELETE ON tb_atividade
 FOR EACH ROW
 BEGIN
     
-	INSERT INTO tb_formulario(id_paciente, id_atividade_portage, id_resposta)
-    SELECT NEW.id, id, NULL
-    FROM tb_atividade_portage
-    ORDER BY id ASC;
+    DELETE FROM tb_tentativa WHERE id_atividade = OLD.id;
 
 END$$
 
@@ -2413,13 +2513,64 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE TRIGGER trg_delete_diagnostico_paciente
-BEFORE UPDATE ON tb_paciente
+CREATE TRIGGER trg_deleta_atividade_personalizada_atividade
+AFTER DELETE ON tb_atividade
 FOR EACH ROW
 BEGIN
+    
+    IF (OLD.id_atividade_personalizada IS NOT NULL) THEN
+    
+    DELETE FROM tb_atividade_personalizada WHERE id = OLD.id_atividade_personalizada;
+    
+    END IF;
 
-	DELETE FROM tb_paciente_transtorno WHERE id_paciente = OLD.id;
+END$$
 
-END $$
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_atividade_status
+AFTER UPDATE ON tb_atividade
+FOR EACH ROW
+
+BEGIN
+
+    IF (OLD.concluida = 0 AND NEW.concluida = 1) THEN
+
+        -- Verifica se é uma atividade do tipo portage
+        IF (OLD.id_atividade_portage IS NOT NULL) THEN
+
+            -- Caso seja ele atualiza o comportamento no formulario do paciente para sim
+            UPDATE tb_formulario SET
+                id_resposta = 1
+            WHERE id_atividade_portage = OLD.id_atividade_portage
+            AND id_paciente = OLD.id_paciente;
+
+        -- Verifica se é uma atividade do tipo personalizada
+        ELSEIF (OLD.id_atividade_personalizada IS NOT NULL) THEN
+
+            -- Caso seja atualiza o valor somando o valor da atividade personalizada
+            UPDATE tb_paciente_habilidade SET
+                idade_meses = idade_meses + ( -- Soma com o valor da 
+
+                    SELECT valor_meses FROM tb_atividade_personalizada
+                    WHERE id = OLD.id_atividade_personalizada
+
+                )
+            WHERE id_paciente = OLD.id_paciente
+            AND id_habilidade = (
+                
+                SELECT id_habilidade 
+                FROM tb_atividade_personalizada 
+                WHERE id = OLD.id_atividade_personalizada
+                
+                );
+
+        END IF;
+
+    END IF;
+
+END$$
 
 DELIMITER ;
