@@ -88,6 +88,10 @@ CREATE PROCEDURE prc_inserir_atividade_tipo_portage(
             'message', 'Requisição bem sucedida!!!',
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
+        
+        call prc_atividades(p_id_paciente, 
+		( SELECT id_habilidade FROM tb_atividade_portage WHERE id = p_id_atividade_portage )
+        , @resultAtividade);
 
 
     END IF;
@@ -194,6 +198,7 @@ CREATE PROCEDURE prc_inserir_atividade_tipo_personalizada(
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
         
+        call prc_atividades(p_id_paciente, p_id_habilidade, @resultAtividade);
     
     END IF;
 
@@ -268,8 +273,11 @@ CREATE PROCEDURE prc_atualiza_atividade_personalizada(
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
     
+		call prc_atividades(p_id_paciente, 
+		( SELECT id_atividade_personalizada FROM tb_atividade WHERE id = p_id_atividade )
+        , @resultAtividade);
+    
 	END IF;
-		
 
 END $$
 
@@ -331,7 +339,20 @@ CREATE PROCEDURE prc_delete_atividade(
         
 	ELSE
     
-		
+		IF ((SELECT id_atividade_personalizada FROM tb_atividade WHERE id = p_id_atividade) IS NOT NULL) THEN
+        
+			call prc_atividades(p_id_paciente, 
+			( SELECT id_atividade_personalizada FROM tb_atividade WHERE id = p_id_atividade )
+			, @resultAtividade);
+            
+		ELSE
+        
+			call prc_atividades(p_id_paciente, 
+			( SELECT id_atividade_portage FROM tb_atividade WHERE id = p_id_atividade )
+			, @resultAtividade);
+        
+        END IF;
+    
 		DELETE FROM tb_atividade WHERE id = p_id_atividade;
 		
         SET p_message = JSON_OBJECT(
@@ -356,8 +377,7 @@ CREATE PROCEDURE prc_atividades(
     OUT p_message JSON
 ) BEGIN
 
-	DECLARE atividades_portage JSON;
-	DECLARE atividades_personalizadas JSON;
+	DECLARE atividades JSON;
 
 	DECLARE data_hoje DATE;
     SET data_hoje = CURDATE();
@@ -394,34 +414,17 @@ CREATE PROCEDURE prc_atividades(
                 'concluida', concluida,
                 'numero_questao', numero_questao,
                 'comportamento', comportamento,
-                'id_habilidade', id_habilidade,
-                'nome_habilidade', nome_habilidade
-            
+                'habilidade', JSON_OBJECT(
+					'id_habilidade', id_habilidade,
+					'nome_habilidade', nome_habilidade
+				)
             )
         )
         FROM vw_todas_atividades
         WHERE tipo_atividade = 'Portage'
         AND id_paciente = p_id_paciente
         AND id_habilidade = p_id_habilidade
-		INTO atividades_portage;
-        
-        SELECT JSON_ARRAYAGG(
-			JSON_OBJECT(
-				
-                'id_atividade', id_atividade,
-                'concluida', concluida,
-                'comportamento', comportamento,
-                'id_habilidade', id_habilidade,
-                'nome_habilidade', nome_habilidade,
-                'valor_meses', valor_meses
-            
-            )
-        )
-        FROM vw_todas_atividades
-        WHERE tipo_atividade = 'Personalizada'
-        AND id_paciente = p_id_paciente
-        AND id_habilidade = p_id_habilidade
-		INTO atividades_personalizadas;
+		INTO atividades;
         
         SET p_message = JSON_OBJECT(
 			
@@ -429,12 +432,7 @@ CREATE PROCEDURE prc_atividades(
 			'status_code', '200',
 			'message', 'Requisição feita com sucesso!!',
 			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y'),
-			'data', JSON_OBJECT(
-					
-                    'atividades_personalizadas', atividades_personalizadas,
-                    'atividades_portage', atividades_portage
-				
-			)
+			'data', atividades
             
         );
     
@@ -477,6 +475,20 @@ CREATE PROCEDURE prc_atualiza_status_atividade(
             'message', 'Item atualizado com sucesso!!!',
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
+            
+		IF ((SELECT id_atividade_personalizada FROM tb_atividade WHERE id = p_id_atividade) IS NOT NULL) THEN
+        
+			call prc_atividades(p_id_paciente, 
+			( SELECT id_atividade_personalizada FROM tb_atividade WHERE id = p_id_atividade )
+			, @resultAtividade);
+            
+		ELSE
+        
+			call prc_atividades(p_id_paciente, 
+			( SELECT id_atividade_portage FROM tb_atividade WHERE id = p_id_atividade )
+			, @resultAtividade);
+        
+        END IF;
     
     END IF;
 
