@@ -115,7 +115,7 @@ CREATE TABLE tb_habilidade(
 CREATE TABLE tb_paciente_habilidade(
 		
 	id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
-	idade_meses DECIMAL(10,1) NOT NULL,
+	idade_meses DECIMAL(10,4) NOT NULL,
 	id_paciente INT NOT NULL,
 	id_habilidade INT NOT NULL,
 	
