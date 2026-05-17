@@ -188,7 +188,7 @@ CREATE PROCEDURE prc_adicionar_paciente(
             'data', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
 
-    ELSEIF (SELECT 1 FROM tb_usuario WHERE id = p_id_responsavel AND id_tipo_usuario = 1) THEN
+    ELSEIF NOT EXISTS (SELECT 1 FROM tb_usuario WHERE id = p_id_responsavel AND id_tipo_usuario = 2) THEN
 		
         SET p_mensagem = JSON_OBJECT(
             'status', FALSE,
