@@ -6,7 +6,7 @@ FOR EACH ROW
 BEGIN
 	
     -- SE ATUALIZADO PARA SIM
-	IF (NEW.id_resposta = 1) THEN
+	IF (NEW.id_resposta = 1 AND OLD.id_resposta = NULL OR OLD.id_resposta = 2 OR OLD.id_resposta = 3) THEN
 		
         -- VERIFICA SE TEM UMA ATIVIDADE COM ESSE ID DE ATIVIDADE PORTAGE
 		IF EXISTS (
@@ -34,7 +34,7 @@ BEGIN
 	END IF;
 		
         -- ATUALIZA O VALOR DA IDADE EM MESES NA TABELA HABILIDADE_PACIENTE (GRÁFICO)
-		UPDATE tb_habilidade_paciente
+		UPDATE tb_paciente_habilidade
         SET idade_meses = idade_meses + (
 			SELECT
 				valor_atividade
@@ -51,7 +51,7 @@ BEGIN
 		-- ELE VERIFICA SE ANTERIORMENTE A RESPOSTA ESTAVA MARCADA COMO SIM E SUBTRAI O VALOR DESSA ATIVIDADE PORTAGE
 		IF(OLD.id_resposta = 1) THEN
         
-			UPDATE tb_habilidade_paciente
+			UPDATE tb_paciente_habilidade
 			SET idade_meses = idade_meses - (
 				SELECT
 					valor_atividade

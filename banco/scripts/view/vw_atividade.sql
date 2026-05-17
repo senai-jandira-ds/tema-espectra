@@ -65,4 +65,5 @@ SELECT
     JOIN tb_atividade_personalizada ON
     tb_atividade_personalizada.id = tb_atividade.id_atividade_personalizada
 	JOIN tb_habilidade ON
-    tb_habilidade.id = tb_atividade_personalizada.id_habilidade;
+    tb_habilidade.id = tb_atividade_personalizada.id_habilidade
+    ORDER BY numero_questao;

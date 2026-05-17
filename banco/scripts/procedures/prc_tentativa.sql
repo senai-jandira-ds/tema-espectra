@@ -1,84 +1,71 @@
 DELIMITER $$
 
 CREATE PROCEDURE prc_inserir_tentativa(
-    IN p_tipo_aplicacao_id INT,
-    IN p_atividade_id INT,
+    IN p_id_tipo_aplicacao INT,
+    IN p_id_atividade INT,
     IN p_resultado BOOLEAN, 
     IN p_observacao VARCHAR(1500),
-    IN p_data DATE,
-    OUT p_mensagem JSON
+    IN p_data_tentativa DATE,
+    OUT p_message JSON
 ) BEGIN
-
-    DECLARE v_tipo_existe INT;
-    DECLARE v_atividade_existe INT;
-    DECLARE v_id_tentativa INT;
     
     DECLARE data_hoje DATE;
     SET data_hoje = CURDATE();
 
-    -- VALIDAÇÕES
-    SELECT COUNT(*) INTO v_tipo_existe
-    FROM tb_tipo_aplicacao 
-    WHERE id = p_tipo_aplicacao_id;
-
-    SELECT COUNT(*) INTO v_atividade_existe
-    FROM tb_atividade 
-    WHERE id = p_atividade_id;
-
-    IF v_tipo_existe = 0 THEN
-
-        SET p_mensagem = JSON_OBJECT(
-            'status', FALSE,
-            'status_code', 404,
-            'message', 'Tipo de aplicação não encontrado',
-            'data', NULL
+   IF NOT EXISTS(SELECT 1 FROM tb_tipo_aplicacao WHERE id = p_id_tipo_aplicacao) THEN
+		SELECT * FROM tb_tipo_aplicacao;
+		SET p_message = JSON_OBJECT(
+        
+			'status', FALSE,
+			'status_code', 404,
+			'message', 'Não foram encontrados dados de retorno!!!',
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        
         );
-
-    ELSEIF v_atividade_existe = 0 THEN
-
-        SET p_mensagem = JSON_OBJECT(
-            'status', FALSE,
-            'status_code', 404,
-            'message', 'Atividade não encontrada',
-            'data', NULL
+   
+   ELSEIF NOT EXISTS (SELECT 1 FROM tb_atividade WHERE id = p_id_atividade) THEN
+		SELECT * FROM tb_atividade;
+		SET p_message = JSON_OBJECT(
+        
+			'status', FALSE,
+			'status_code', 404,
+			'message', 'Não foram encontrados dados de retorno!!!',
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        
         );
-
-    ELSE
-
-        -- INSERT
-        INSERT INTO tb_tentativa (
-            resultado,
+   
+   ELSE
+   
+		INSERT INTO tb_tentativa(
+			
+			id_atividade,
+            id_tipo_aplicacao,
             observacao,
             data_tentativa,
-            id_tipo_aplicacao,
-            id_atividade
-        )
-        VALUES (
-            p_resultado,
+            resultado
+            
+        ) VALUES (
+			
+            p_id_atividade,
+            p_id_tipo_aplicacao,
             p_observacao,
-            p_data,
-            p_tipo_aplicacao_id,
-            p_atividade_id
+            p_data_tentativa,
+            p_resultado
+            
         );
-
-        SET v_id_tentativa = LAST_INSERT_ID();
-
-        SET p_mensagem = JSON_OBJECT(
-            'status', TRUE,
-            'status_code', 201,
-            'message', 'Tentativa cadastrada com sucesso',
-            'date', DATE_FORMAT(data_hoje, '%d/%m/%Y'),
-            'data', JSON_OBJECT(
-                'id', v_id_tentativa,
-                'resultado', p_resultado,
-                'observacao', p_observacao,
-                'data_tentativa', DATE_FORMAT(p_data, '%d/%m/%Y'),
-                'id_tipo_aplicacao', p_tipo_aplicacao_id,
-                'id_atividade', p_atividade_id
-            )
+        
+        SET p_message = JSON_OBJECT(
+        
+			'status', TRUE,
+			'status_code', 201,
+			'message', 'Inserção feita com sucesso!!!',
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        
         );
-
-    END IF;
+        
+        CALL prc_tentativa(p_id_atividade, @resultTentativa);
+   
+   END IF;
 
 END$$
 
@@ -131,8 +118,7 @@ CREATE PROCEDURE prc_tentativa(
                 )
             )
         ) FROM vw_tentativas 
-        WHERE id_atividade = p_id_atividade 
-        ORDER BY data_tentativa DESC)
+        WHERE id_atividade = p_id_atividade)
         
         );
     

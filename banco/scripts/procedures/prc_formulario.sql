@@ -1,5 +1,5 @@
 DELIMITER $$
-
+drop procedure prc_atualizar_respostas_formulario;
 CREATE PROCEDURE prc_atualizar_respostas_formulario(
 	IN p_id_usuario INT,
     IN p_id_paciente INT,
@@ -10,7 +10,7 @@ CREATE PROCEDURE prc_atualizar_respostas_formulario(
 	DECLARE data_hoje DATE;
     SET data_hoje = CURDATE();
 
-	IF NOT EXISTS(SELECT 1 FROM tb_paciente WHERE id = p_id) THEN
+	IF NOT EXISTS(SELECT 1 FROM tb_paciente WHERE id = p_id_paciente) THEN
     
 		SET p_message = JSON_OBJECT(
         
@@ -49,7 +49,7 @@ CREATE PROCEDURE prc_atualizar_respostas_formulario(
 		UPDATE tb_formulario
 		JOIN JSON_TABLE( -- JOIN CRIA A TABELA VIRTUAL, E JSON_TABLE É RESPONSÁVEL POR LER OS JSONS
 			p_lista_respostas, -- ARRAY JSON VINDO DO BACK
-			'[*]' COLUMNS ( -- [*] QUER DIZER: PERCORRA TODOS OS OBJETOS DENTRO DO ARRAY JSON
+			'$[*]' COLUMNS ( -- [*] QUER DIZER: PERCORRA TODOS OS OBJETOS DENTRO DO ARRAY JSON
 				id_atividade_portage INT PATH '$.id_atividade_portage', -- CRIA COLUNA VIRTUAL, O PATH INDICA ONDE PROCURAR NO JSON
 				id_resposta INT PATH '$.id_resposta'
 			)
@@ -136,7 +136,7 @@ CREATE PROCEDURE prc_formulario_pelo_id_paciente(
 		
         SELECT JSON_ARRAYAGG(
             JSON_OBJECT(
-				'id_atividade', id_atividade,
+				'id_atividade_portage', id_atividade,
                 'numero_questao', numero_questao,
                 'comportamento', comportamento,
                 'id_faixa_idade', id_faixa_idade,

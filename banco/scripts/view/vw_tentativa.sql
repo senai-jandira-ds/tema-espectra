@@ -44,4 +44,5 @@ SELECT
     JOIN tb_atividade_portage ON
     tb_atividade_portage.id = tb_atividade.id_atividade_portage
     JOIN tb_habilidade ON
-    tb_habilidade.id = tb_atividade_portage.id_habilidade;
+    tb_habilidade.id = tb_atividade_portage.id_habilidade
+    ORDER BY data_tentativa DESC;

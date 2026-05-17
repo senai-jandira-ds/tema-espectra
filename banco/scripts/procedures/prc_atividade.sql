@@ -2,6 +2,7 @@ drop procedure prc_inserir_atividade_tipo_portage;
 drop procedure prc_inserir_atividade_tipo_personalizada;
 drop procedure prc_atualiza_atividade_personalizada;
 drop procedure prc_delete_atividade;
+drop procedure prc_atividades;
 
 DELIMITER $$
 
@@ -68,6 +69,17 @@ CREATE PROCEDURE prc_inserir_atividade_tipo_portage(
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
 
+    ELSEIF NOT EXISTS (SELECT 1 FROM tb_atividade_portage WHERE id = p_id_atividade_portage) THEN
+    
+		SET p_message = JSON_OBJECT(
+        
+			'status', FALSE,
+			'status_code', 404,
+			'message', 'Não foram encontrados dados de retorno!!!',
+			'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
+        
+        );
+    
     ELSE
 
         INSERT INTO tb_atividade (
@@ -84,8 +96,8 @@ CREATE PROCEDURE prc_inserir_atividade_tipo_portage(
 
         SET p_message = JSON_OBJECT(
             'status', TRUE,
-            'status_code', 200,
-            'message', 'Requisição bem sucedida!!!',
+            'status_code', 201,
+            'message', 'Inserção feita com sucesso!!!',
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
         );
         
@@ -273,9 +285,10 @@ CREATE PROCEDURE prc_atualiza_atividade_personalizada(
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
     
-		call prc_atividades(p_id_paciente, 
-		( SELECT id_atividade_personalizada FROM tb_atividade WHERE id = p_id_atividade )
-        , @resultAtividade);
+		call prc_atividades(
+		(SELECT id_paciente FROM tb_atividade WHERE id_atividade_personalizada = (SELECT id_atividade_personalizada FROM tb_atividade WHERE id = p_id_atividade)), 
+		(SELECT id_habilidade FROM tb_atividade_personalizada WHERE id = (SELECT id_atividade_personalizada FROM tb_atividade WHERE id = p_id_atividade)),
+        @resultAtividade);
     
 	END IF;
 
@@ -421,8 +434,7 @@ CREATE PROCEDURE prc_atividades(
             )
         )
         FROM vw_todas_atividades
-        WHERE tipo_atividade = 'Portage'
-        AND id_paciente = p_id_paciente
+        WHERE id_paciente = p_id_paciente
         AND id_habilidade = p_id_habilidade
 		INTO atividades;
         
@@ -475,20 +487,6 @@ CREATE PROCEDURE prc_atualiza_status_atividade(
             'message', 'Item atualizado com sucesso!!!',
             'date', DATE_FORMAT(data_hoje, '%d/%m/%Y')
 		);
-            
-		IF ((SELECT id_atividade_personalizada FROM tb_atividade WHERE id = p_id_atividade) IS NOT NULL) THEN
-        
-			call prc_atividades(p_id_paciente, 
-			( SELECT id_atividade_personalizada FROM tb_atividade WHERE id = p_id_atividade )
-			, @resultAtividade);
-            
-		ELSE
-        
-			call prc_atividades(p_id_paciente, 
-			( SELECT id_atividade_portage FROM tb_atividade WHERE id = p_id_atividade )
-			, @resultAtividade);
-        
-        END IF;
     
     END IF;
 
