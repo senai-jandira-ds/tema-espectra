@@ -2,38 +2,24 @@ module.exports = {
     "openapi": "3.2.0",
 
     "info": {
+
         "title": "Espectra - Auxiliando quem cuida",
         "description": "Documentação da API da aplicação Espectra",
-
-        "x-contributors": [
-            {
-                "name": "Nicolas dos Santos",
-                "github": "https://github.com/nicolas16-sd"
-            },
-            {
-                "name": "Enzo Felix",
-                "github": "https://github.com/EnzoCarrilho"
-            },
-            {
-                "name": "Gabriel Lacerda",
-                "github": "https://github.com/GabrielPKTN"
-            },
-            {
-                "name": "Maria Cecilia",
-                "github": "https://github.com/mariacecilia-01"
-            },
-            {
-                "name": "Aline Alves",
-                "github": "https://github.com/AlineMaker"
-            }
-        ],
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "description": "Contact developer",
+            "email": "gabriellacerda1905@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
 
         "version": "1.0.0",
 
         "tags": [
+            'EndPoints [USUARIO]', 
             'EndPoints [PACIENTE]',
-            'EndPoints [PSICOPEDAGOGO]',
-            'EndPoints [RESPONSAVEL]',
             'EndPoints [ATIVIDADE PORTAGE]',
             'EndPoints [ATIVIDADE PERSONALIZADA]',
             'EndPoints [ATIVIDADE]',

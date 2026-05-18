@@ -1,26 +1,24 @@
 module.exports = {
     put: {
-        tags: ['EndPoints [RESPONSAVEL]'],
-        description: "Atualiza a senha de um responsável no sistema",
-        operationId: "atualizarSenhaResponsavel",
+        tags: ["EndPoints [USUARIO]"],
+        description: 'Solicita link de redefinição de senha',
+        operationId: 'solicitaRedefinicaoSenha',
         parameters: [{
             name: "id",
             in: "path",
-            description: "Id do Responsável",
+            description: "id do usuario",
             required: true,
             schema: {
-                type: "int",
-                format: "int64"
+                type: "string",
             }
         },
         {
             name: "senha",
             in: "query",
-            description: "senha",
+            description: "senha do usuario",
             required: true,
             schema: {
                 type: "int",
-                format: "int64"
             }
         }],
         responses: {
@@ -29,7 +27,7 @@ module.exports = {
                 content: {
                     "application/json": {
                         schema: {
-                            $ref: "#/components/schemas/success_update"
+                            $ref: "#/components/schemas/success"
                         }
                     }
                 }
@@ -45,7 +43,7 @@ module.exports = {
                 }
             },
             404: {
-                description: "O Id informado não foi encontrado",
+                description: "Não encontrado",
                 content: {
                     "application/json": {
                         schema: {
@@ -54,18 +52,8 @@ module.exports = {
                     }
                 }
             },
-            415: {
-                description: "Tipos de dados inválidos",
-                content: {
-                    "application/json": {
-                        schema: {
-                            $ref: "#/components/schemas/error415"
-                        }
-                    }
-                }
-            },
             500: {
-                description: "Não foi possível processar a requisição por erros internos da Controller",
+                description: "Erros Internos",
                 content: {
                     "application/json": {
                         schema: {

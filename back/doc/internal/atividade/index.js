@@ -6,7 +6,7 @@ const putAtividadeTipoPersonalizada = require('./putAtividadeTipoPersonalizada')
 
 module.exports = {
     
-    "v1/espectra/atividade_portage/": {
+    "v1/espectra/atividade_portage/?id_atividade_portage={id}&id_paciente={id}": {
         ...postAtividadeTipoPortage
     },
 

@@ -1,8 +1,8 @@
 module.exports = {
     post: {
         tags: ["EndPoints [PACIENTE]"],
-        description: 'Cadastra relação entre paciente e responsavel',
-        operationId: 'inserirRelacaoPacienteResponsavel',
+        description: 'Cadastra relação entre paciente e usuario',
+        operationId: 'inserirRelacaoPacienteUsuario',
         parameters: [{
             name: "id_paciente",
             in: "query",
@@ -13,9 +13,9 @@ module.exports = {
             }
         },
         {
-            name: "id_responsavel",
+            name: "id_usuario",
             in: "query",
-            description: "id do responsavel",
+            description: "id do usuario",
             required: true,
             schema: {
                 type: "int",

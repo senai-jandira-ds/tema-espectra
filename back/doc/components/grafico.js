@@ -12,10 +12,10 @@ module.exports = {
                 "description": "nome da habilidade",
                 "example": "Socialização"
             },
-            "valor_meses": {
+            "idade_meses": {
                 "type": "double",
                 "description": "valor em meses",
-                "example": 12.6
+                "example": 1.6
             }
         }
     }

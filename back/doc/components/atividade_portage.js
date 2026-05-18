@@ -7,12 +7,12 @@ module.exports = {
                 "description": "id_portage_activity",
                 "example": 1
             },
-            "numero_questao": {
+            "numero_comportamento": {
                 "type": "int",
                 "description": "number_question",
                 "example": 1
             },
-            "questao": {
+            "comportamento": {
                 "type": "string",
                 "description": "question",
                 "example": "Observa uma pessoa movimentando-se em seu campo visual. "

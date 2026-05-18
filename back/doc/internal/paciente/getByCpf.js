@@ -1,42 +1,30 @@
 module.exports = {
     get: {
-        tags: ["EndPoints [PSICOPEDAGOGO]"],
-        description: 'Retorna o ID para efetuar o login',
-        operationId: 'retornaId',
+        tags: ["EndPoints [PACIENTE]"],
+        description: 'Retorna um Paciente do sistema pelo cpf.',
+        operationId: 'listarPacienteCpf',
         parameters: [{
-            name: "email",
+            name: "CPF",
             in: "query",
-            description: "email",
+            description: "CPF do paciente",
             required: true,
             schema: {
-                type: "int",
-                format: "int64"
+                type: "string",
             }
-        },
-        {
-            name: "senha",
-            in: "query",
-            description: "senha",
-            required: true,
-            schema: {
-                type: "int",
-                format: "int64"
-            }
-        }
-    ],
+        }],
         responses: {
             200: {
                 description: "Requisição bem sucedida",
                 content: {
                     "application/json": {
                         schema: {
-                            $ref: "#/components/schemas/psicopedagogoId"
+                            $ref: "#/components/schemas/pacienteGet"
                         }
                     }
                 }
             },
             400: {
-                description: "Campo inválido",
+                 description: "Campo inválido",
                 content: {
                     "application/json": {
                         schema: {

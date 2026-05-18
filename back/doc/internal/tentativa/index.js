@@ -1,5 +1,5 @@
 const getById =           require('./getById.js')
-const getByAtividadeId =  require('./getByAtividadeId.JS')
+const getByAtividadeId =  require('./getByAtividadeId.js')
 const post =              require('./post.js')
 
 

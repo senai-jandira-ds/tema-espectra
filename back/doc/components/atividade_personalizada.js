@@ -7,7 +7,7 @@ module.exports = {
                 "description": "id_custom_activity",
                 "example": 1
             },
-            "questao": {
+            "comportamento": {
                 "type": "string",
                 "description": "question",
                 "example": "Conversar em rodas de amigos e colegas"
@@ -33,7 +33,7 @@ module.exports = {
                 "description": "id_custom_activity",
                 "example": 1
             },
-            "questao": {
+            "comportamento": {
                 "type": "string",
                 "description": "question",
                 "example": "Conversar em rodas de amigos e colegas"
@@ -59,7 +59,7 @@ module.exports = {
     atividade_personalizadaPost: {
         type: "object",
         properties: {
-            "questao": {
+            "comportamento": {
                 "type": "string",
                 "description": "question",
                 "example": "Conversar em rodas de amigos e colegas"
@@ -75,7 +75,7 @@ module.exports = {
     atividade_personalizadaPut: {
         type: "object",
         properties: {
-            "questao": {
+            "comportamento": {
                 "type": "string",
                 "description": "question",
                 "example": "Conversar em rodas de amigos e colegas"
