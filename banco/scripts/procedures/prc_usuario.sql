@@ -459,8 +459,44 @@ CREATE PROCEDURE prc_deleta_usuario(
         FROM tb_usuario
         WHERE id = p_id AND senha = p_senha
     ) THEN 
-		
-        DELETE FROM tb_usuario WHERE id = p_id AND senha = p_senha;
+        
+        IF EXISTS (SELECT 1 FROM tb_usuario WHERE id = p_id AND id_tipo_usuario = 1) THEN
+			
+            DELETE FROM tb_atividade
+            WHERE id_atividade_personalizada IN (
+				SELECT id FROM tb_atividade_personalizada WHERE id_usuario = p_id
+            );
+			
+			DELETE FROM tb_atividade_personalizada WHERE id_usuario = p_id;
+			
+            DELETE FROM tb_usuario_paciente WHERE id_usuario = p_id;
+        
+			DELETE FROM tb_usuario WHERE id = p_id AND senha = p_senha;
+        
+        END IF;
+
+        IF EXISTS (SELECT 1 FROM tb_usuario WHERE id = p_id AND id_tipo_usuario = 2) THEN
+
+			DELETE FROM tb_usuario_paciente 
+            WHERE id_paciente IN (SELECT id FROM tb_paciente WHERE id_usuario = p_id);
+
+            DELETE FROM tb_paciente_habilidade 
+            WHERE id_paciente IN (SELECT id FROM tb_paciente WHERE id_usuario = p_id);
+
+            DELETE FROM tb_paciente_transtorno 
+            WHERE id_paciente IN (SELECT id FROM tb_paciente WHERE id_usuario = p_id);
+
+            DELETE FROM tb_formulario 
+            WHERE id_paciente IN (SELECT id FROM tb_paciente WHERE id_usuario = p_id);
+
+            DELETE FROM tb_atividade 
+            WHERE id_paciente IN (SELECT id FROM tb_paciente WHERE id_usuario = p_id);
+
+            DELETE FROM tb_paciente WHERE id_usuario = p_id;
+            
+            DELETE FROM tb_usuario WHERE id = p_id AND senha = p_senha;
+
+        END IF;
     
 		SET p_message = JSON_OBJECT(
             'status', TRUE,
@@ -485,11 +521,3 @@ CREATE PROCEDURE prc_deleta_usuario(
 END$$
     
 DELIMITER ;
-
--- select @idUsuarioLogin;
--- select @resultUsuario;
--- select @resultUsuarioLogin;
--- select @resultHome;
--- select @resultCreateUser;
--- select @resultUpdateUser;
--- select @resultDeleteUser;

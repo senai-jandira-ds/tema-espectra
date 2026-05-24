@@ -38,9 +38,9 @@ INSERT INTO tb_grau_suporte (grau) VALUES
 
 
 INSERT INTO tb_paciente (foto, nome, cpf, data_nascimento, id_serie_escolar, id_grau_suporte, id_usuario) VALUES
-(NULL, 'Lucas Andrade', '68212059812', '2015-04-10', 4, 1, 1),
-(NULL, 'Beatriz Oliveira', '75287318898', '2013-09-22', 6, 2, 1),
-(NULL, 'Pedro Santos', '71121093884', '2011-01-30', 8, 1, 1),
+(NULL, 'Lucas Andrade', '68212059812', '2015-04-10', 4, 1, 2),
+(NULL, 'Beatriz Oliveira', '75287318898', '2013-09-22', 6, 2, 2),
+(NULL, 'Pedro Santos', '71121093884', '2011-01-30', 8, 1, 2),
 (NULL, 'Juliana Costa', '50773850848', '2016-07-15', 3, 2, 2),
 (NULL, 'Rafael Mendes', '50805139850', '2010-12-05', 9, 3, 2);
 

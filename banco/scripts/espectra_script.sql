@@ -1,3 +1,4 @@
+DROP DATABASE db_espectra;
 CREATE DATABASE db_espectra;
 USE db_espectra;
 
@@ -244,12 +245,6 @@ CREATE TABLE tb_formulario(
 		FOREIGN KEY (id_resposta)  REFERENCES tb_resposta_formulario(id)
     
     );
-    
--- ----------------------------------
--- INSERTS
--- ----------------------------------
-USE db_espectra;
-
 
 INSERT INTO tb_tipo_usuario(tipo_usuario) VALUES ('Psicopedagogo'),('Responsável');
 
@@ -285,9 +280,9 @@ INSERT INTO tb_grau_suporte (grau) VALUES
 
 
 INSERT INTO tb_paciente (foto, nome, cpf, data_nascimento, id_serie_escolar, id_grau_suporte, id_usuario) VALUES
-(NULL, 'Lucas Andrade', '68212059812', '2015-04-10', 4, 1, 1),
-(NULL, 'Beatriz Oliveira', '75287318898', '2013-09-22', 6, 2, 1),
-(NULL, 'Pedro Santos', '71121093884', '2011-01-30', 8, 1, 1),
+(NULL, 'Lucas Andrade', '68212059812', '2015-04-10', 4, 1, 2),
+(NULL, 'Beatriz Oliveira', '75287318898', '2013-09-22', 6, 2, 2),
+(NULL, 'Pedro Santos', '71121093884', '2011-01-30', 8, 1, 2),
 (NULL, 'Juliana Costa', '50773850848', '2016-07-15', 3, 2, 2),
 (NULL, 'Rafael Mendes', '50805139850', '2010-12-05', 9, 3, 2);
 
@@ -1003,7 +998,7 @@ INSERT INTO tb_formulario (id_paciente, id_atividade_portage, id_resposta)
 SELECT 5, id, NULL 
 FROM tb_atividade_portage 
 ORDER BY id ASC;
-
+    
 -- Dados do paciente (serie e grau de suporte ) pelo id
 CREATE VIEW vw_data_paciente AS
 SELECT
@@ -1229,7 +1224,8 @@ SELECT
     tb_habilidade.id = tb_atividade_portage.id_habilidade
     ORDER BY data_tentativa DESC;
 
-    DELIMITER $$
+
+DELIMITER $$
 
 CREATE PROCEDURE prc_usuario(
 	IN p_id INT,
@@ -1676,8 +1672,44 @@ CREATE PROCEDURE prc_deleta_usuario(
         FROM tb_usuario
         WHERE id = p_id AND senha = p_senha
     ) THEN 
-		
-        DELETE FROM tb_usuario WHERE id = p_id AND senha = p_senha;
+        
+        IF EXISTS (SELECT 1 FROM tb_usuario WHERE id = p_id AND id_tipo_usuario = 1) THEN
+			
+            DELETE FROM tb_atividade
+            WHERE id_atividade_personalizada IN (
+				SELECT id FROM tb_atividade_personalizada WHERE id_usuario = p_id
+            );
+			
+			DELETE FROM tb_atividade_personalizada WHERE id_usuario = p_id;
+			
+            DELETE FROM tb_usuario_paciente WHERE id_usuario = p_id;
+        
+			DELETE FROM tb_usuario WHERE id = p_id AND senha = p_senha;
+        
+        END IF;
+
+        IF EXISTS (SELECT 1 FROM tb_usuario WHERE id = p_id AND id_tipo_usuario = 2) THEN
+
+			DELETE FROM tb_usuario_paciente 
+            WHERE id_paciente IN (SELECT id FROM tb_paciente WHERE id_usuario = p_id);
+
+            DELETE FROM tb_paciente_habilidade 
+            WHERE id_paciente IN (SELECT id FROM tb_paciente WHERE id_usuario = p_id);
+
+            DELETE FROM tb_paciente_transtorno 
+            WHERE id_paciente IN (SELECT id FROM tb_paciente WHERE id_usuario = p_id);
+
+            DELETE FROM tb_formulario 
+            WHERE id_paciente IN (SELECT id FROM tb_paciente WHERE id_usuario = p_id);
+
+            DELETE FROM tb_atividade 
+            WHERE id_paciente IN (SELECT id FROM tb_paciente WHERE id_usuario = p_id);
+
+            DELETE FROM tb_paciente WHERE id_usuario = p_id;
+            
+            DELETE FROM tb_usuario WHERE id = p_id AND senha = p_senha;
+
+        END IF;
     
 		SET p_message = JSON_OBJECT(
             'status', TRUE,
@@ -3395,23 +3427,6 @@ BEGIN
 
     END IF;
 
-END$$
-
-DELIMITER ;
-
-DELIMITER $$
-
-CREATE TRIGGER trg_delete_usuario
-BEFORE DELETE ON tb_usuario
-FOR EACH ROW
-BEGIN
-
-	DELETE FROM tb_usuario_paciente WHERE id_usuario = OLD.id;
-		
-	IF (OLD.id_tipo_usuario = 1) THEN
-        DELETE FROM tb_atividade_personalizada WHERE id_usuario = OLD.id;
-    END IF;
-    
 END$$
 
 DELIMITER ;
