@@ -305,6 +305,7 @@ CREATE PROCEDURE prc_delete_atividade(
     OUT p_message JSON
 ) BEGIN
 
+	DECLARE v_id_atividade_personalizada INT DEFAULT NULL;
     DECLARE data_hoje DATE;
     SET data_hoje = CURDATE();
     
@@ -366,8 +367,20 @@ CREATE PROCEDURE prc_delete_atividade(
         
         END IF;
     
-		DELETE FROM tb_atividade WHERE id = p_id_atividade;
+		IF EXISTS(SELECT 1 FROM tb_atividade WHERE id = p_id_atividade AND id_atividade_personalizada IS NOT NULL) THEN
+        
+			SELECT id_atividade_personalizada FROM tb_atividade WHERE id = p_id_atividade INTO v_id_atividade_personalizada;
+            
+        END IF;
 		
+		DELETE FROM tb_atividade WHERE id = p_id_atividade;
+        
+        IF (v_id_atividade_personalizada IS NOT NULL) THEN
+        
+			DELETE FROM tb_atividade_personalizada WHERE id = v_id_atividade_personalizada;
+        
+        END IF;
+        
         SET p_message = JSON_OBJECT(
             'status', TRUE,
             'status_code', 200,

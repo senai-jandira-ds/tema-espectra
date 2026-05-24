@@ -2717,6 +2717,7 @@ CREATE PROCEDURE prc_delete_atividade(
     OUT p_message JSON
 ) BEGIN
 
+	DECLARE v_id_atividade_personalizada INT DEFAULT NULL;
     DECLARE data_hoje DATE;
     SET data_hoje = CURDATE();
     
@@ -2778,8 +2779,20 @@ CREATE PROCEDURE prc_delete_atividade(
         
         END IF;
     
-		DELETE FROM tb_atividade WHERE id = p_id_atividade;
+		IF EXISTS(SELECT 1 FROM tb_atividade WHERE id = p_id_atividade AND id_atividade_personalizada IS NOT NULL) THEN
+        
+			SELECT id_atividade_personalizada FROM tb_atividade WHERE id = p_id_atividade INTO v_id_atividade_personalizada;
+            
+        END IF;
 		
+		DELETE FROM tb_atividade WHERE id = p_id_atividade;
+        
+        IF (v_id_atividade_personalizada IS NOT NULL) THEN
+        
+			DELETE FROM tb_atividade_personalizada WHERE id = v_id_atividade_personalizada;
+        
+        END IF;
+        
         SET p_message = JSON_OBJECT(
             'status', TRUE,
             'status_code', 200,
@@ -3335,18 +3348,12 @@ END$$
 
 DELIMITER ;
 
-DELIMITER $$
-
-CREATE TRIGGER trg_deleta_atividade_personalizada_atividade
-AFTER DELETE ON tb_atividade
+CREATE TRIGGER trg_deleta_atividade_usuario
+BEFORE DELETE ON tb_atividade_personalizada
 FOR EACH ROW
 BEGIN
     
-    IF (OLD.id_atividade_personalizada IS NOT NULL) THEN
-    
-    DELETE FROM tb_atividade_personalizada WHERE id = OLD.id_atividade_personalizada;
-    
-    END IF;
+    DELETE FROM tb_atividade WHERE id_atividade_personalizada = OLD.id;
 
 END$$
 
@@ -3386,6 +3393,23 @@ BEGIN
 
     END IF;
 
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_delete_usuario
+BEFORE DELETE ON tb_usuario
+FOR EACH ROW
+BEGIN
+
+	DELETE FROM tb_usuario_paciente WHERE id_usuario = OLD.id;
+		
+	IF (OLD.id_tipo_usuario = 1) THEN
+        DELETE FROM tb_atividade_personalizada WHERE id_usuario = OLD.id;
+    END IF;
+    
 END$$
 
 DELIMITER ;

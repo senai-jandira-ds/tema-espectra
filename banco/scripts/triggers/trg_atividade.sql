@@ -13,16 +13,12 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE TRIGGER trg_deleta_atividade_personalizada_atividade
-AFTER DELETE ON tb_atividade
+CREATE TRIGGER trg_deleta_atividade_usuario
+BEFORE DELETE ON tb_atividade_personalizada
 FOR EACH ROW
 BEGIN
     
-    IF (OLD.id_atividade_personalizada IS NOT NULL) THEN
-    
-    DELETE FROM tb_atividade_personalizada WHERE id = OLD.id_atividade_personalizada;
-    
-    END IF;
+    DELETE FROM tb_atividade WHERE id_atividade_personalizada = OLD.id;
 
 END$$
 
