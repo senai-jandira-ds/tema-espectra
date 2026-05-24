@@ -3348,6 +3348,8 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+
 CREATE TRIGGER trg_deleta_atividade_usuario
 BEFORE DELETE ON tb_atividade_personalizada
 FOR EACH ROW
