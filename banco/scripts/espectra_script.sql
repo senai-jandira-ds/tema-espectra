@@ -3085,7 +3085,16 @@ CREATE PROCEDURE prc_atividade_portage_nao_desenvolvida(
                 'id_faixa_idade', id_faixa_idade
             )
         ) FROM vw_atividade_portage_nao_desenvolvida
-		WHERE id_habilidade = p_id_habilidade AND id_paciente = p_id_paciente
+		WHERE id_habilidade = p_id_habilidade
+        AND id_paciente = p_id_paciente
+        AND NOT EXISTS (
+        
+			SELECT 1
+            FROM tb_atividade
+            WHERE tb_atividade.id_atividade_portage = vw_atividade_portage_nao_desenvolvida.id_atividade_portage
+            AND tb_atividade.id_paciente = p_id_paciente
+        
+        )
         ORDER BY id_atividade_portage, numero_questao, comportamento, id_habilidade, nome_habilidade, id_faixa_idade
         INTO return_atividades;
         
