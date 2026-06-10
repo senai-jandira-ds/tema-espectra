@@ -60,7 +60,7 @@ CREATE PROCEDURE prc_inserir_atividade_tipo_portage(
 			
 		);
         
-	ELSEIF EXISTS (SELECT 1 FROM tb_atividade WHERE id_atividade_portage = p_id_atividade_portage) THEN 
+	ELSEIF EXISTS (SELECT 1 FROM tb_atividade WHERE id_atividade_portage = p_id_atividade_portage AND id_paciente = p_id_paciente) THEN 
 
 		SET p_message = JSON_OBJECT(
             'status', FALSE,
@@ -593,6 +593,8 @@ END $$
 DELIMITER ;
 
 DELIMITER $$
+
+
 
 CREATE PROCEDURE prc_atividade_portage_nao_desenvolvida(
 	
